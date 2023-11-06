@@ -7,4 +7,5 @@ class Court:
         self.net_image = load_image('net.png')
 
     def draw(self):
-        pass
+        self.image.draw(500, 300)
+        self.net_image.draw(500, 230)
