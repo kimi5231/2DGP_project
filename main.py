@@ -1,5 +1,6 @@
 from pico2d import *
 from court import Court
+from player import Player
 
 
 def handle_events():
@@ -16,9 +17,11 @@ def handle_events():
 open_canvas(1000, 600)
 running = True
 court = Court()
+player = Player()
 
 while running:
     court.draw()
+    player.draw()
     update_canvas()
     handle_events()
 
