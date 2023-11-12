@@ -12,6 +12,8 @@ def handle_events():
             running = False
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             running = False
+        else:
+            player.handle_event(event)
 
 
 open_canvas(1000, 600)
@@ -20,6 +22,7 @@ court = Court()
 player = Player()
 
 while running:
+    clear_canvas()
     court.draw()
     player.draw()
     update_canvas()
