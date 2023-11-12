@@ -6,7 +6,7 @@ class Player:
     def __init__(self):
         self.x = 300
         self.y = 100
-        self.dir = 1
+        self.dir = 0
         self.speed = 10
         self.frame = 0
         self.image = load_image('move.png')
@@ -18,11 +18,12 @@ class Player:
         if event.type == SDL_KEYDOWN:
             if event.key == SDLK_RIGHT:
                 self.dir = 1
-                self.x += self.dir * self.speed
-                self.frame = (self.frame + 1) % 5
             elif event.key == SDLK_LEFT:
                 self.dir = -1
-                self.x += self.dir * self.speed
-                self.frame = (self.frame + 1) % 5
-        # elif event.type == SDL_KEYUP:
-        #    self.frame = 0
+        elif event.type == SDL_KEYUP:
+            self.dir = 0
+            self.frame = 0
+
+    def move(self):
+        self.x += self.dir * self.speed
+        self.frame = (self.frame + 1) % 5

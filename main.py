@@ -26,6 +26,8 @@ while running:
     court.draw()
     player.draw()
     update_canvas()
+    player.move()
     handle_events()
+    delay(0.1)
 
 close_canvas()
