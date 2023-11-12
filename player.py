@@ -1,5 +1,5 @@
 from pico2d import load_image
-from sdl2 import SDL_KEYDOWN, SDLK_RIGHT
+from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP
 
 
 class Player:
@@ -17,5 +17,12 @@ class Player:
     def handle_event(self, event):
         if event.type == SDL_KEYDOWN:
             if event.key == SDLK_RIGHT:
+                self.dir = 1
                 self.x += self.dir * self.speed
                 self.frame = (self.frame + 1) % 5
+            elif event.key == SDLK_LEFT:
+                self.dir = -1
+                self.x += self.dir * self.speed
+                self.frame = (self.frame + 1) % 5
+        # elif event.type == SDL_KEYUP:
+        #    self.frame = 0
