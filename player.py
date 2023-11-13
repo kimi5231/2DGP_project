@@ -1,6 +1,10 @@
 from pico2d import load_image
 from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP
 
+MOVE_W = 50
+MOVE_H = 100
+DRIVE_W = 70
+DRIVE_H = 110
 
 class Player:
     def __init__(self):
@@ -9,10 +13,16 @@ class Player:
         self.dir = 0
         self.speed = 10
         self.frame = 0
-        self.image = load_image('move.png')
+        self.action = 1
+        self.frame_num = 4
+        self.frame_len = DRIVE_W
+        self.action_len = DRIVE_H
+        self.image = load_image('player.png')
 
     def draw(self):
-        self.image.clip_draw(self.frame * 50, 0, 50, 100, self.x, self.y)
+        self.image.clip_draw(self.frame * self.frame_len,
+                             self.action * self.action_len,
+                             self.frame_len, self.action_len, self.x, self.y)
 
     def handle_event(self, event):
         if event.type == SDL_KEYDOWN:
@@ -26,4 +36,4 @@ class Player:
 
     def move(self):
         self.x += self.dir * self.speed
-        self.frame = (self.frame + 1) % 5
+        self.frame = (self.frame + 1) % self.frame_num
