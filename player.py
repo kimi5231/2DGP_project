@@ -10,6 +10,24 @@ DRIVE_WAIT_N = 1
 DRIVE_HIT_N = 3
 
 
+class Move:
+    @staticmethod
+    def enter(player, e):
+        pass
+
+    @staticmethod
+    def exit(boy, e):
+        pass
+
+    @staticmethod
+    def do(boy):
+        pass
+
+    @staticmethod
+    def draw(boy):
+        pass
+
+
 class StateMachine:
     def __init__(self, player):
         self.player = player
