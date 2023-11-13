@@ -24,6 +24,7 @@ class Player:
         self.image = load_image('player.png')
 
     def draw(self):
+        self.frame = (self.frame + 1) % self.frame_num
         self.image.clip_draw(self.frame * self.frame_len,
                              self.action * self.action_len,
                              self.frame_len, self.action_len, self.x, self.y)
@@ -50,7 +51,6 @@ class Player:
 
     def move(self):
         self.x += self.dir * self.speed
-        self.frame = (self.frame + 1) % self.frame_num
 
     def drive_serve(self):
         pass
