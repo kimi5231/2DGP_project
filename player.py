@@ -1,10 +1,13 @@
 from pico2d import load_image
 from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP
 
+PLAYER_H = 110
 MOVE_W = 50
-MOVE_H = 100
+MOVE_N = 5
 DRIVE_W = 70
-DRIVE_H = 110
+DRIVE_WAIT_N = 4
+DRIVE_HIT_N = 3
+
 
 class Player:
     def __init__(self):
@@ -16,7 +19,7 @@ class Player:
         self.action = 0
         self.frame_num = 5
         self.frame_len = MOVE_W
-        self.action_len = MOVE_H
+        self.action_len = PLAYER_H
         self.image = load_image('player.png')
 
     def draw(self):
