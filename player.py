@@ -59,7 +59,7 @@ class Idle:
     def enter(player, e): # Idle 상태로 들어갈 때 할 것
         player.frame = 0
         player.action = 0
-        player.frame_num = 0
+        player.frame_num = 1
         player.frame_len = MOVE_W
 
     @staticmethod
@@ -80,9 +80,10 @@ class Idle:
 class StateMachine:
     def __init__(self, player):
         self.player = player
-        self.cur_state = Move
+        self.cur_state = Idle
         self.table = {
-            Move: {right_down: Move, right_up: Move, left_down: Move, left_up: Move}
+            Idle: {right_down: Move, right_up: Move, left_down: Move, left_up: Move},
+            Move: {right_down: Idle, right_up: Idle, left_down: Idle, left_up: Idle}
         }
 
     def start(self):
