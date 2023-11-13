@@ -16,16 +16,20 @@ def handle_events():
             player.handle_event(event)
 
 
+def update():
+    clear_canvas()
+    court.draw()
+    player.draw()
+    update_canvas()
+
+
 open_canvas(1000, 600)
 running = True
 court = Court()
 player = Player()
 
 while running:
-    clear_canvas()
-    court.draw()
-    player.draw()
-    update_canvas()
+    update()
     player.move()
     handle_events()
     delay(0.05)
