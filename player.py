@@ -12,19 +12,26 @@ DRIVE_HIT_N = 3
 
 class Move:
     @staticmethod
-    def enter(player, e):
+    def enter(player, e): # Move 상태로 들어갈 때 할 것
+        if right_down(e) or left_up(e):
+            player.dir = 1
+        if left_down(e) or right_up(e):
+            player.dir = -1
+        player.frame = 0
+        player.action = 0
+        player.frame_num = MOVE_N
+        player.frame_len = MOVE_W
+
+    @staticmethod
+    def exit(boy, e): # Move 상태에서 나올 때 할 것
         pass
 
     @staticmethod
-    def exit(boy, e):
+    def do(boy): # Move 상태인 동안 할 것
         pass
 
     @staticmethod
-    def do(boy):
-        pass
-
-    @staticmethod
-    def draw(boy):
+    def draw(boy): # player 그리기
         pass
 
 
