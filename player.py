@@ -10,6 +10,22 @@ DRIVE_WAIT_N = 1
 DRIVE_HIT_N = 3
 
 
+def right_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RIGHT
+
+
+def right_up(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_RIGHT
+
+
+def left_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_LEFT
+
+
+def left_up(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LEFT
+
+
 class Move:
     @staticmethod
     def enter(player, e): # Move 상태로 들어갈 때 할 것
@@ -40,7 +56,7 @@ class StateMachine:
         self.player = player
         self.cur_state = Move
         self.table = {
-            Move: { }
+            Move: {right_down: Move, right_up: Move, left_down: Move, left_up: Move}
         }
 
     def start(self):
