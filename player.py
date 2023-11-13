@@ -26,6 +26,29 @@ def left_up(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LEFT
 
 
+class Serve:
+    @staticmethod
+    def enter(player, e): # Serve 상태로 들어갈 때 할 것
+        player.frame = 0
+        player.action = 1
+        player.frame_num = DRIVE_READY_N
+        player.frame_len = DRIVE_W
+
+    @staticmethod
+    def exit(player, e): # Serve 상태에서 나올 때 할 것
+        pass
+
+    @staticmethod
+    def do(player): # Serve 상태인 동안 할 것
+        player.frame = (player.frame + 1) % player.frame_num
+
+    @staticmethod
+    def draw(player): # player 그리기
+        player.image.clip_draw(player.frame * player.frame_len,
+                              player.action * player.action_len,
+                              player.frame_len, player.action_len, player.x, player.y)
+
+
 class Move:
     @staticmethod
     def enter(player, e): # Move 상태로 들어갈 때 할 것
