@@ -9,14 +9,14 @@ DRIVE_H = 110
 class Player:
     def __init__(self):
         self.x = 300
-        self.y = 100
+        self.y = 105
         self.dir = 0
         self.speed = 10
         self.frame = 0
-        self.action = 1
-        self.frame_num = 4
-        self.frame_len = DRIVE_W
-        self.action_len = DRIVE_H
+        self.action = 0
+        self.frame_num = 5
+        self.frame_len = MOVE_W
+        self.action_len = MOVE_H
         self.image = load_image('player.png')
 
     def draw(self):

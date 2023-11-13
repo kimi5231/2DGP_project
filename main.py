@@ -28,6 +28,6 @@ while running:
     update_canvas()
     player.move()
     handle_events()
-    delay(0.1)
+    delay(0.05)
 
 close_canvas()
