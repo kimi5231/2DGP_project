@@ -5,7 +5,8 @@ PLAYER_H = 110
 MOVE_W = 50
 MOVE_N = 5
 DRIVE_W = 70
-DRIVE_WAIT_N = 4
+DRIVE_READY_N = 4
+DRIVE_WAIT_N = 1
 DRIVE_HIT_N = 3
 
 
@@ -40,7 +41,7 @@ class Player:
                 self.frame_len = MOVE_W
                 self.dir = -1
             elif event.key == SDLK_SPACE:
-                self.action = 1
+                self.action = 2
                 self.frame_num = DRIVE_WAIT_N
                 self.frame_len = DRIVE_W
         elif event.type == SDL_KEYUP:
@@ -50,3 +51,6 @@ class Player:
     def move(self):
         self.x += self.dir * self.speed
         self.frame = (self.frame + 1) % self.frame_num
+
+    def drive_serve(self):
+        pass
