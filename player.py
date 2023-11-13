@@ -10,6 +10,33 @@ DRIVE_WAIT_N = 1
 DRIVE_HIT_N = 3
 
 
+class StateMachine:
+    def __init__(self, player):
+        self.player = player
+        self.cur_state = Move
+        self.table = {
+            Move: { }
+        }
+
+    def start(self):
+        self.cur_state.enter(self.player, ('START', 0))
+
+    def update(self):
+        self.cur_state.do(self.player)
+
+    def draw(self):
+        self.cur_state.draw(self.plyer)
+
+    def handle_event(self, e):
+        for check_event, next_state in self.table[self.cur_state].items():
+            if check_event(e):
+                self.cur_state.exit(self.player, e)
+                self.cur_state = next_state
+                self.cur_state.enter(self.player, e)
+                return True
+        return False
+
+
 class Player:
     def __init__(self):
         self.x = 300
