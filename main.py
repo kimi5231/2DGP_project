@@ -30,7 +30,6 @@ player = Player()
 
 while running:
     update()
-    player.move()
     handle_events()
     delay(0.05)
 

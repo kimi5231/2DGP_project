@@ -39,16 +39,19 @@ class Move:
         player.frame_len = MOVE_W
 
     @staticmethod
-    def exit(boy, e): # Move 상태에서 나올 때 할 것
+    def exit(player, e): # Move 상태에서 나올 때 할 것
         pass
 
     @staticmethod
-    def do(boy): # Move 상태인 동안 할 것
-        pass
+    def do(player): # Move 상태인 동안 할 것
+        player.frame = (player.frame + 1) % player.frame_num
+        player.x += player.dir * player.speed
 
     @staticmethod
-    def draw(boy): # player 그리기
-        pass
+    def draw(player): # player 그리기
+        player.image.clip_draw(player.frame * player.frame_len,
+                              player.action * player.action_len,
+                              player.frame_len, player.action_len, player.x, player.y)
 
 
 class StateMachine:
@@ -63,7 +66,7 @@ class StateMachine:
         self.cur_state.enter(self.player, ('START', 0))
 
     def draw(self):
-        self.cur_state.draw(self.plyer)
+        self.cur_state.draw(self.player)
 
     def update(self):
         self.cur_state.do(self.player)
@@ -95,19 +98,9 @@ class Player:
 
     def draw(self):
         self.state_machine.draw()
-        # self.frame = (self.frame + 1) % self.frame_num
-        # self.image.clip_draw(self.frame * self.frame_len,
-        #                      self.action * self.action_len,
-        #                      self.frame_len, self.action_len, self.x, self.y)
 
     def update(self):
         self.state_machine.update()
 
     def handle_event(self, event):
         self.state_machine.handle_event(('INPUT', event))
-
-    # def move(self):
-    #     self.x += self.dir * self.speed
-
-    # def drive_serve(self):
-    #     pass
