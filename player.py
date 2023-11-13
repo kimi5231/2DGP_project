@@ -62,11 +62,11 @@ class StateMachine:
     def start(self):
         self.cur_state.enter(self.player, ('START', 0))
 
-    def update(self):
-        self.cur_state.do(self.player)
-
     def draw(self):
         self.cur_state.draw(self.plyer)
+
+    def update(self):
+        self.cur_state.do(self.player)
 
     def handle_event(self, e):
         for check_event, next_state in self.table[self.cur_state].items():
@@ -90,35 +90,24 @@ class Player:
         self.frame_len = MOVE_W
         self.action_len = PLAYER_H
         self.image = load_image('player.png')
+        self.state_machine = StateMachine(self)
+        self.state_machine.start()
 
     def draw(self):
-        self.frame = (self.frame + 1) % self.frame_num
-        self.image.clip_draw(self.frame * self.frame_len,
-                             self.action * self.action_len,
-                             self.frame_len, self.action_len, self.x, self.y)
+        self.state_machine.draw()
+        # self.frame = (self.frame + 1) % self.frame_num
+        # self.image.clip_draw(self.frame * self.frame_len,
+        #                      self.action * self.action_len,
+        #                      self.frame_len, self.action_len, self.x, self.y)
+
+    def update(self):
+        self.state_machine.update()
 
     def handle_event(self, event):
-        if event.type == SDL_KEYDOWN:
-            if event.key == SDLK_RIGHT:
-                self.action = 0
-                self.frame_num = MOVE_N
-                self.frame_len = MOVE_W
-                self.dir = 1
-            elif event.key == SDLK_LEFT:
-                self.action = 0
-                self.frame_num = MOVE_N
-                self.frame_len = MOVE_W
-                self.dir = -1
-            elif event.key == SDLK_SPACE:
-                self.action = 2
-                self.frame_num = DRIVE_WAIT_N
-                self.frame_len = DRIVE_W
-        elif event.type == SDL_KEYUP:
-            self.dir = 0
-            self.frame = 0
+        self.state_machine.handle_event(('INPUT', event))
 
-    def move(self):
-        self.x += self.dir * self.speed
+    # def move(self):
+    #     self.x += self.dir * self.speed
 
-    def drive_serve(self):
-        pass
+    # def drive_serve(self):
+    #     pass
