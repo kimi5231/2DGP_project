@@ -1,4 +1,6 @@
 from pico2d import *
+
+import game_world
 from court import Court
 from player import Player
 
@@ -16,6 +18,20 @@ def handle_events():
             player.handle_event(event)
 
 
+def create_world():
+    global running
+    global court
+    global player
+
+    running = True
+
+    court = Court()
+    game_world.add_object(court, 0)
+
+    player = Player()
+    game_world.add_object(player, 1)
+
+
 def update():
     clear_canvas()
     court.draw()
@@ -24,9 +40,6 @@ def update():
 
 
 open_canvas(1000, 600)
-running = True
-court = Court()
-player = Player()
 
 while running:
     update()
