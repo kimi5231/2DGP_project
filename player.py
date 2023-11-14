@@ -74,7 +74,6 @@ class ServeWait:
 
     @staticmethod
     def exit(player, e): # Serve 상태에서 나올 때 할 것
-        #player.make_ball()
         pass
 
     @staticmethod
@@ -82,6 +81,7 @@ class ServeWait:
         player.frame = (player.frame + 1) % player.frame_num
         if get_time() - player.start_time > 2:
             player.state_machine.handle_event(('TIME_OUT', 0))
+
 
     @staticmethod
     def draw(player): # player 그리기
@@ -220,5 +220,5 @@ class Player:
         self.state_machine.handle_event(('INPUT', event))
 
     def make_ball(self):
-        ball = Ball(self.x + 25, self.y + 10, 0, 1, 10)
+        ball = Ball(self.x + 25, self.y + 10, 0, 1, 5)
         game_world.add_object(ball, 1)
