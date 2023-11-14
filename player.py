@@ -74,6 +74,7 @@ class ServeWait:
 
     @staticmethod
     def exit(player, e): # Serve 상태에서 나올 때 할 것
+        player.make_ball()
         pass
 
     @staticmethod
@@ -199,7 +200,7 @@ class StateMachine:
 
 class Player:
     def __init__(self):
-        self.x, y, dir, speed = 300, 105, 0, 10
+        self.x, self.y, self.dir, self.speed = 300, 105, 0, 10
         self.frame = 0
         self.action = 0
         self.frame_num = MOVE_N
