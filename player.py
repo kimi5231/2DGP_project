@@ -1,4 +1,4 @@
-from pico2d import load_image
+from pico2d import load_image, get_time
 from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_SPACE
 
 PLAYER_H = 110
@@ -49,6 +49,11 @@ class Serve:
     @staticmethod
     def do(player): # Serve 상태인 동안 할 것
         player.frame = (player.frame + 1) % player.frame_num
+        if player.frame == 3:
+            player.action = 2
+            player.frame_num = DRIVE_WAIT_N
+            player.start_time = get_time()
+
 
     @staticmethod
     def draw(player): # player 그리기
