@@ -32,19 +32,21 @@ def create_world():
     game_world.add_object(player, 1)
 
 
-def update():
+def update_world():
+    game_world.update()
+
+
+def render_world():
     clear_canvas()
-    court.draw()
-    player.draw()
+    game_world.render()
     update_canvas()
 
 
 open_canvas(1000, 600)
-
+create_world()
 while running:
-    update()
-    player.update()
     handle_events()
+    update_world()
+    render_world()
     delay(0.05)
-
 close_canvas()
