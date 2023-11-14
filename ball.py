@@ -1,10 +1,38 @@
 from pico2d import load_image, get_time
 
 
+def time_out(e):
+    return e[0] == 'TIME_OUT'
+
+
+class Ready:
+    @staticmethod
+    def enter(ball, e): # Ready 상태로 들어갈 때 할 것
+        ball.start_time = get_time()
+
+    @staticmethod
+    def exit(ball, e): # Ready 상태에서 나올 때 할 것
+        pass
+
+    @staticmethod
+    def do(ball): # Ready 상태인 동안 할 것
+        ball.x += ball.dirX * ball.speed
+        ball.y += ball.dirY * ball.speed
+        if get_time() - ball.start_time > 0.5:
+            ball.dirY = -1
+        if get_time() - ball.start_time > 1:
+            pass
+
+
+    @staticmethod
+    def draw(ball): # ball 그리기
+        ball.image.draw(ball.x, ball.y, 30, 30)
+
+
 class StateMachine:
     def __init__(self, ball):
         self.ball = ball
-        #self.cur_state = ?
+        self.cur_state = Ready
         self.table = {
 
         }
@@ -32,11 +60,11 @@ class Ball:
     def __init__(self, x, y, dirX, dirY, speed):
         self.x, self.y, self.dirX, self.dirY, self.speed = x, y, dirX, dirY, speed
         self.image = load_image('ball.png')
-        self.start_time = get_time()
+        self.state_machine = StateMachine(self)
+        self.state_machine.start()
 
     def draw(self):
-        self.image.draw(self.x, self.y, 30, 30)
+        self.state_machine.draw()
 
     def update(self):
-        self.x += self.dirX * self.speed
-        self.y += self.dirY * self.speed
+        self.state_machine.update()
