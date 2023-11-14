@@ -113,8 +113,9 @@ class StateMachine:
         self.player = player
         self.cur_state = Idle
         self.table = {
-            Idle: {right_down: Move, right_up: Move, left_down: Move, left_up: Move},
-            Move: {right_down: Idle, right_up: Idle, left_down: Idle, left_up: Idle}
+            Idle: {right_down: Move, right_up: Move, left_down: Move, left_up: Move, space_down: Serve},
+            Move: {right_down: Idle, right_up: Idle, left_down: Idle, left_up: Idle},
+            Serve: {time_out: Idle}
         }
 
     def start(self):
