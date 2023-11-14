@@ -198,10 +198,7 @@ class StateMachine:
 
 class Player:
     def __init__(self):
-        self.x = 300
-        self.y = 105
-        self.dir = 0
-        self.speed = 10
+        self.x, y, dir, speed = 300, 105, 0, 10
         self.frame = 0
         self.action = 0
         self.frame_num = MOVE_N
