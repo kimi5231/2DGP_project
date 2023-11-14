@@ -48,6 +48,8 @@ class ServeHit:
 
     @staticmethod
     def do(player): # Serve 상태인 동안 할 것
+        if player.frame == 2:
+            player.state_machine.handle_event(('TIME_OUT', 0))
         player.frame = (player.frame + 1) % player.frame_num
 
     @staticmethod
