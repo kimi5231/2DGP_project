@@ -220,5 +220,5 @@ class Player:
         self.state_machine.handle_event(('INPUT', event))
 
     def make_ball(self):
-        ball = Ball(self.x + 25, self.y + 10, 1, 10)
+        ball = Ball(self.x + 25, self.y + 10, 0, 1, 10)
         game_world.add_object(ball, 1)
