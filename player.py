@@ -74,7 +74,7 @@ class ServeWait:
 
     @staticmethod
     def exit(player, e): # Serve 상태에서 나올 때 할 것
-        player.make_ball()
+        #player.make_ball()
         pass
 
     @staticmethod
@@ -100,7 +100,7 @@ class ServeReady:
 
     @staticmethod
     def exit(player, e): # Serve 상태에서 나올 때 할 것
-        pass
+        player.make_ball()
 
     @staticmethod
     def do(player): # Serve 상태인 동안 할 것
@@ -220,5 +220,5 @@ class Player:
         self.state_machine.handle_event(('INPUT', event))
 
     def make_ball(self):
-        ball = Ball(self.x + 25, self.y + 50, 1, 10)
+        ball = Ball(self.x + 25, self.y + 10, 1, 10)
         game_world.add_object(ball, 1)
