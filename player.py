@@ -1,6 +1,7 @@
 from pico2d import load_image, get_time, delay
 from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_SPACE
 
+import game_world
 from ball import Ball
 
 PLAYER_H = 110
@@ -219,3 +220,4 @@ class Player:
 
     def make_ball(self):
         ball = Ball(self.x + 25, self.y + 50, 1, 10)
+        game_world.add_object(ball, 1)
