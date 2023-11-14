@@ -1,6 +1,8 @@
 from pico2d import load_image, get_time, delay
 from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_SPACE
 
+from ball import Ball
+
 PLAYER_H = 110
 MOVE_W = 50
 MOVE_N = 5
@@ -217,3 +219,6 @@ class Player:
 
     def handle_event(self, event):
         self.state_machine.handle_event(('INPUT', event))
+
+    def make_ball(self):
+        ball = Ball(self.x + 25, self.y + 50, 1, 10)
