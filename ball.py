@@ -1,5 +1,7 @@
 from pico2d import load_image, get_time
 
+import game_world
+
 
 def time_out(e):
     return e[0] == 'TIME_OUT'
@@ -20,8 +22,8 @@ class Ready:
         ball.y += ball.dirY * ball.speed
         if get_time() - ball.start_time > 0.5:
             ball.dirY = -1
-        if get_time() - ball.start_time > 1:
-            pass
+        if get_time() - ball.start_time > 2:
+            game_world.remove_object(ball)
 
 
     @staticmethod

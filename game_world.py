@@ -15,3 +15,10 @@ def render(): # 게임 월드 객체 그리기
     for layer in world:
         for o in layer:
             o.draw()
+
+
+def remove_object(o): # 객체 삭제
+    for layer in world:
+        if o in layer:
+            layer.remove(o)
+            return
