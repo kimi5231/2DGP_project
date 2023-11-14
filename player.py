@@ -41,6 +41,7 @@ class Serve:
         player.action = 1
         player.frame_num = DRIVE_READY_N
         player.frame_len = DRIVE_W
+        player.start_time = 0
 
     @staticmethod
     def exit(player, e): # Serve 상태에서 나올 때 할 것
@@ -53,6 +54,8 @@ class Serve:
             player.action = 2
             player.frame_num = DRIVE_WAIT_N
             player.start_time = get_time()
+        if get_time() - player.start_time > 2:
+            player.state_machine.handle_event(('TIME_OUT', 0))
 
 
     @staticmethod
