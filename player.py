@@ -166,7 +166,9 @@ class StateMachine:
         self.table = {
             Idle: {right_down: Move, right_up: Move, left_down: Move, left_up: Move, space_down: ServeReady},
             Move: {right_down: Idle, right_up: Idle, left_down: Idle, left_up: Idle},
-            ServeReady: {time_out: ServeWait}
+            ServeReady: {time_out: ServeWait},
+            ServeWait: {space_down: ServeHit, time_out: Idle},
+            ServeHit: {time_out: Idle}
         }
 
     def start(self):
