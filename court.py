@@ -9,3 +9,6 @@ class Court:
     def draw(self):
         self.image.draw(500, 300, 1000, 600)
         self.net_image.draw(500, 130, 30, 150)
+
+    def update(self):
+        pass
