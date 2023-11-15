@@ -1,4 +1,4 @@
-from pico2d import load_image, get_time
+from pico2d import load_image, get_time, draw_rectangle
 from sdl2 import SDL_KEYDOWN, SDLK_SPACE
 
 import game_world
@@ -95,6 +95,7 @@ class Ball:
 
     def draw(self):
         self.state_machine.draw()
+        draw_rectangle(*self.get_bb())
 
     def update(self):
         self.state_machine.update()
