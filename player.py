@@ -1,4 +1,4 @@
-from pico2d import load_image, get_time, delay
+from pico2d import load_image, get_time, delay, draw_rectangle
 from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_SPACE
 
 import game_world
@@ -212,6 +212,7 @@ class Player:
 
     def draw(self):
         self.state_machine.draw()
+        draw_rectangle(*self.get_bb())
 
     def update(self):
         self.state_machine.update()
@@ -224,4 +225,4 @@ class Player:
         game_world.add_object(ball, 1)
 
     def get_bb(self):
-        return self.x - 25, self.y - 50, self.x + 25, self.y + 50
+        return self.x - 25, self.y - 55, self.x + 25, self.y + 55
