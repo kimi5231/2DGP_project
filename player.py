@@ -222,3 +222,6 @@ class Player:
     def make_ball(self):
         ball = Ball(self.x + 25, self.y + 10, 0, 1, 5)
         game_world.add_object(ball, 1)
+
+    def get_bb(self):
+        return self.x - 25, self.y - 50, self.x + 25, self.y + 50

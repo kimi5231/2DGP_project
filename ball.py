@@ -101,3 +101,6 @@ class Ball:
 
     def handle_event(self, event):
         self.state_machine.handle_event(('INPUT', event))
+
+    def get_bb(self):
+        return self.x - 15, self.y - 15, self.x + 15, self.y + 15
