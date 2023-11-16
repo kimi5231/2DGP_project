@@ -33,11 +33,10 @@ def init():
 
 
 def finish():
-    #game_world.clear()
-    pass
+    game_world.clear()
 
 
-def update_world():
+def update():
     game_world.update()
 
 

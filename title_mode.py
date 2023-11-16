@@ -23,7 +23,18 @@ def handle_events():
             game_framework.quit()
 
 
+def update():
+    pass
+
 def draw():
     clear_canvas()
-    image.draw(400, 300)
+    image.draw(500, 300, 1000, 600)
     update_canvas()
+
+
+def pause():
+    pass
+
+
+def resume():
+    pass
