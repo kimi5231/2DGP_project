@@ -4,6 +4,7 @@ import game_framework
 import game_world
 from court import Court
 from player import Player
+from timer import Timer
 
 
 def handle_events():
@@ -29,6 +30,9 @@ def init():
 
     player = Player()
     game_world.add_object(player, 1)
+
+    timer = Timer()
+    game_world.add_object(timer, 1)
 
 
 def finish():
