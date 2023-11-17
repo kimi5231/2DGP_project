@@ -1,4 +1,4 @@
-from pico2d import load_image, clear_canvas, update_canvas, get_events
+from pico2d import load_image, clear_canvas, update_canvas, get_events, load_font
 from sdl2 import SDL_QUIT, SDL_KEYDOWN, SDLK_ESCAPE, SDLK_SPACE
 
 import game_framework
@@ -7,12 +7,16 @@ import play_mode
 
 def init():
     global image
+    global font
     image = load_image('title.png')
+    font = load_font('ENCR10B.TTF', 30)
 
 
 def finish():
     global image
+    global font
     del image
+    del font
 
 
 def handle_events():
@@ -32,6 +36,7 @@ def update():
 def draw():
     clear_canvas()
     image.draw(500, 300, 1000, 600)
+    font.draw(300, 200, 'Push Space', (255, 255, 255))
     update_canvas()
 
 
