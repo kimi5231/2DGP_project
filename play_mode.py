@@ -4,6 +4,7 @@ import game_framework
 import game_world
 from court import Court
 from player import Player
+from score import Score
 from timer import Timer
 
 
@@ -33,6 +34,9 @@ def init():
 
     timer = Timer()
     game_world.add_object(timer, 1)
+
+    score = Score()
+    game_world.add_object(score, 1)
 
 
 def finish():
