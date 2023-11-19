@@ -11,8 +11,8 @@ def init():
     global font
     global Jx, Jy, Cx, Cy, Fx, Fy
 
-    image_J = load_image('Japan.png')
-    image_C = load_image('Cuba.png')
+    image_J = load_image('Japan.jpg')
+    image_C = load_image('Cuba.jpg')
     font = load_font('ENCR10B.TTF', 30)
     Jx, Jy = -100, 400
     Cx, Cy = 700, 400
@@ -39,9 +39,10 @@ def handle_events():
 
 
 def update():
+    global Jx, Jy, Cx, Cy, Fx, Fy
     if Jx < 150 and Cx > 450:
         Jx += 10
-        Cx += 10
+        Cx -= 10
     if Fy < 400:
         Fy += 10
     if Jx >= 150 and Cx <= 450 and Fy >= 400:

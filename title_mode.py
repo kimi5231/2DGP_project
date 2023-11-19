@@ -2,7 +2,7 @@ from pico2d import load_image, clear_canvas, update_canvas, get_events, load_fon
 from sdl2 import SDL_QUIT, SDL_KEYDOWN, SDLK_ESCAPE, SDLK_SPACE
 
 import game_framework
-import play_mode
+import match_mode
 
 
 def init():
@@ -27,7 +27,7 @@ def handle_events():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_SPACE:
-            game_framework.change_mode(play_mode)
+            game_framework.change_mode(match_mode)
 
 
 def update():
