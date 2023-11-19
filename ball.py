@@ -105,3 +105,7 @@ class Ball:
 
     def get_bb(self):
         return self.x - 15, self.y - 15, self.x + 15, self.y + 15
+
+    def handle_collision(self, group, other):
+        if group == 'player:ball':
+            self.dirX = 1

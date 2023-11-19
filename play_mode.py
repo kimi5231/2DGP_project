@@ -38,6 +38,8 @@ def init():
     score = Score()
     game_world.add_object(score, 1)
 
+    game_world.add_collision_pair('player:ball', player, None)
+
 
 def finish():
     game_world.clear()
@@ -45,6 +47,7 @@ def finish():
 
 def update():
     game_world.update()
+    game_world.handle_collisions()
     delay(0.05)
 
 

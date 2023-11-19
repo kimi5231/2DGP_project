@@ -222,7 +222,12 @@ class Player:
 
     def make_ball(self):
         ball = Ball(self.x + 25, self.y + 10, 0, 1, 5)
+        game_world.add_collision_pair('player:ball', None, ball)
         game_world.add_object(ball, 1)
 
     def get_bb(self):
         return self.x - 25, self.y - 55, self.x + 25, self.y + 55
+
+    def handle_collision(self, group, other):
+        if group == 'player:ball':
+            pass
