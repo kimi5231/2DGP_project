@@ -8,11 +8,13 @@ import play_mode
 def init():
     global image_J
     global image_C
+    global image_background
     global font
     global Jx, Jy, Cx, Cy, Fx, Fy
 
     image_J = load_image('Japan.jpg')
     image_C = load_image('Cuba.jpg')
+    image_background = load_image('match_background.jpg')
     font = load_font('ENCR10B.TTF', 30)
     Jx, Jy = -100, 400
     Cx, Cy = 700, 400
@@ -22,10 +24,12 @@ def init():
 def finish():
     global image_J
     global image_C
+    global image_background
     global font
 
     del image_J
     del image_C
+    del image_background
     del font
 
 
@@ -53,6 +57,7 @@ def update():
 
 def draw():
     clear_canvas()
+    image_background.draw(300, 300, 600, 600)
     image_J.draw(Jx, Jy, 200, 100)
     image_C.draw(Cx, Cy, 200, 100)
     font.draw(Jx, Jy-100, 'JAPAN', (255, 255, 255))
