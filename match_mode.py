@@ -1,4 +1,4 @@
-from pico2d import load_image, load_font, clear_canvas, update_canvas, get_events
+from pico2d import load_image, load_font, clear_canvas, update_canvas, get_events, delay
 from sdl2 import SDL_QUIT, SDL_KEYDOWN, SDLK_ESCAPE
 
 import game_framework
@@ -46,7 +46,9 @@ def update():
     if Fy < 400:
         Fy += 10
     if Jx >= 150 and Cx <= 450 and Fy >= 400:
+        delay(0.1)
         game_framework.change_mode(play_mode)
+    delay(0.01)
 
 
 def draw():
