@@ -37,21 +37,74 @@ def time_out(e):
     return e[0] == 'TIME_OUT'
 
 
-class ServeHit:
+class DriveServeHit:
     @staticmethod
-    def enter(player, e): # Serve 상태로 들어갈 때 할 것
+    def enter(player, e): # DriveServeHit 상태로 들어갈 때 할 것
         player.frame = 0
-        player.action = 3
-        player.frame_num = DRIVE_HIT_N
-        player.frame_len = DRIVE_W
+        player.action = 4
+        player.frame_num = 3
+        player.frame_len = 70
 
     @staticmethod
-    def exit(player, e): # Serve 상태에서 나올 때 할 것
+    def exit(player, e): # DriveServeHit 상태에서 나올 때 할 것
         pass
 
     @staticmethod
-    def do(player): # Serve 상태인 동안 할 것
+    def do(player): # DriveServeHit 상태인 동안 할 것
         if player.frame == 2:
+            player.state_machine.handle_event(('TIME_OUT', 0))
+        player.frame = (player.frame + 1) % player.frame_num
+        delay(0.05)
+
+    @staticmethod
+    def draw(player): # player 그리기
+        player.image.clip_draw(player.frame * player.frame_len,
+                              player.action * player.action_len,
+                              player.frame_len, player.action_len, player.x, player.y)
+
+
+class DriveServeWait:
+    @staticmethod
+    def enter(player, e): # DriveServeWait 상태로 들어갈 때 할 것
+        player.frame = 0
+        player.action = 3
+        player.frame_num = 1
+        player.frame_len = 70
+        player.start_time = get_time()
+
+    @staticmethod
+    def exit(player, e): # DriveServeWait 상태에서 나올 때 할 것
+        pass
+
+    @staticmethod
+    def do(player): # DriveServeWait 상태인 동안 할 것
+        player.frame = (player.frame + 1) % player.frame_num
+        if get_time() - player.start_time > 1.5:
+            player.state_machine.handle_event(('TIME_OUT', 0))
+
+
+    @staticmethod
+    def draw(player): # player 그리기
+        player.image.clip_draw(player.frame * player.frame_len,
+                              player.action * player.action_len,
+                              player.frame_len, player.action_len, player.x, player.y)
+
+
+class DriveServeReady:
+    @staticmethod
+    def enter(player, e): # DriveServeReady 상태로 들어갈 때 할 것
+        player.frame = 0
+        player.action = 2
+        player.frame_num = 4
+        player.frame_len = 70
+
+    @staticmethod
+    def exit(player, e): # DriveServeReady 상태에서 나올 때 할 것
+        player.make_ball()
+
+    @staticmethod
+    def do(player): # DriveServeReady 상태인 동안 할 것
+        if player.frame == 3:
             player.state_machine.handle_event(('TIME_OUT', 0))
         player.frame = (player.frame + 1) % player.frame_num
         delay(0.05)
@@ -65,49 +118,23 @@ class ServeHit:
 
 class ServeWait:
     @staticmethod
-    def enter(player, e): # Serve 상태로 들어갈 때 할 것
+    def enter(player, e): # ServeWait 상태로 들어갈 때 할 것
         player.frame = 0
-        player.action = 2
-        player.frame_num = DRIVE_WAIT_N
-        player.frame_len = DRIVE_W
+        player.action = 1
+        player.frame_num = 1
+        player.frame_len = 70
         player.start_time = get_time()
 
     @staticmethod
-    def exit(player, e): # Serve 상태에서 나올 때 할 것
+    def exit(player, e): # ServeWait 상태에서 나올 때 할 것
         pass
 
     @staticmethod
-    def do(player): # Serve 상태인 동안 할 것
+    def do(player): # ServeWait 상태인 동안 할 것
         player.frame = (player.frame + 1) % player.frame_num
         if get_time() - player.start_time > 2:
             player.state_machine.handle_event(('TIME_OUT', 0))
 
-
-    @staticmethod
-    def draw(player): # player 그리기
-        player.image.clip_draw(player.frame * player.frame_len,
-                              player.action * player.action_len,
-                              player.frame_len, player.action_len, player.x, player.y)
-
-
-class ServeReady:
-    @staticmethod
-    def enter(player, e): # Serve 상태로 들어갈 때 할 것
-        player.frame = 0
-        player.action = 1
-        player.frame_num = DRIVE_READY_N
-        player.frame_len = DRIVE_W
-
-    @staticmethod
-    def exit(player, e): # Serve 상태에서 나올 때 할 것
-        player.make_ball()
-
-    @staticmethod
-    def do(player): # Serve 상태인 동안 할 것
-        if player.frame == 3:
-            player.state_machine.handle_event(('TIME_OUT', 0))
-        player.frame = (player.frame + 1) % player.frame_num
-        delay(0.05)
 
     @staticmethod
     def draw(player): # player 그리기
@@ -172,11 +199,12 @@ class StateMachine:
         self.player = player
         self.cur_state = Idle
         self.table = {
-            Idle: {right_down: Move, right_up: Move, left_down: Move, left_up: Move, space_down: ServeReady},
+            Idle: {right_down: Move, right_up: Move, left_down: Move, left_up: Move, space_down: ServeWait},
             Move: {right_down: Idle, right_up: Idle, left_down: Idle, left_up: Idle},
-            ServeReady: {time_out: ServeWait},
-            ServeWait: {space_down: ServeHit, time_out: Idle},
-            ServeHit: {time_out: Idle}
+            ServeWait: {space_down: DriveServeReady, time_out: Idle},
+            DriveServeReady: {time_out: DriveServeWait},
+            DriveServeWait: {space_down: DriveServeHit, time_out: Idle},
+            DriveServeHit: {time_out: Idle}
         }
 
     def start(self):

@@ -1,5 +1,8 @@
 action 0 (move) : w 50, h 110, frame 5
-action 1 (drive serve wait) : w 70 h 110, frame 4
-action 2 (drive serve hit): w 70 h 110, frame 3
+action 1 (serve wait) : w 70 h 110, frame 1
+action 2 (drive serve ready): w 70 h 110, frame 4
+action 3 (drive serve wait): w 70 h 110, frame 1
+action 4 (drive serve hit): w 70 h 110, frame 3
+
 action 2 (spike serve wait): 
 action 2 (spike serve hit): 
