@@ -41,9 +41,10 @@ class DriveServeHit:
     @staticmethod
     def enter(player, e): # DriveServeHit 상태로 들어갈 때 할 것
         player.frame = 0
-        player.action = 4
+        player.action = 5
         player.frame_num = 3
         player.frame_len = 70
+        player.action_len = 110
 
     @staticmethod
     def exit(player, e): # DriveServeHit 상태에서 나올 때 할 것
@@ -67,9 +68,10 @@ class DriveServeWait:
     @staticmethod
     def enter(player, e): # DriveServeWait 상태로 들어갈 때 할 것
         player.frame = 0
-        player.action = 3
+        player.action = 4
         player.frame_num = 1
         player.frame_len = 70
+        player.action_len = 110
         player.start_time = get_time()
 
     @staticmethod
@@ -94,9 +96,10 @@ class DriveServeReady:
     @staticmethod
     def enter(player, e): # DriveServeReady 상태로 들어갈 때 할 것
         player.frame = 0
-        player.action = 2
+        player.action = 3
         player.frame_num = 4
         player.frame_len = 70
+        player.action_len = 110
 
     @staticmethod
     def exit(player, e): # DriveServeReady 상태에서 나올 때 할 것
@@ -120,9 +123,10 @@ class ServeWait:
     @staticmethod
     def enter(player, e): # ServeWait 상태로 들어갈 때 할 것
         player.frame = 0
-        player.action = 1
+        player.action = 2
         player.frame_num = 1
         player.frame_len = 70
+        player.action_len = 110
         player.start_time = get_time()
 
     @staticmethod
@@ -151,9 +155,10 @@ class Move:
         if left_down(e) or right_up(e):
             player.dir = -1
         player.frame = 0
-        player.action = 0
-        player.frame_num = MOVE_N
-        player.frame_len = MOVE_W
+        player.action = 1
+        player.frame_num = 5
+        player.frame_len = 50
+        player.action_len = 110
 
     @staticmethod
     def exit(player, e): # Move 상태에서 나올 때 할 것
@@ -177,7 +182,8 @@ class Idle:
         player.frame = 0
         player.action = 0
         player.frame_num = 1
-        player.frame_len = MOVE_W
+        player.frame_len = 50
+        player.action_len = 110
 
     @staticmethod
     def exit(player, e): # Idle 상태에서 나올 때 할 것
@@ -231,9 +237,9 @@ class Player:
         self.x, self.y, self.dir, self.speed = 300, 105, 0, 10
         self.frame = 0
         self.action = 0
-        self.frame_num = MOVE_N
-        self.frame_len = MOVE_W
-        self.action_len = PLAYER_H
+        self.frame_num = 1
+        self.frame_len = 50
+        self.action_len = 110
         self.image = load_image('player.png')
         self.state_machine = StateMachine(self)
         self.state_machine.start()
