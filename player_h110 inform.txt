@@ -1,0 +1,7 @@
+action 0 (idle) : w 50, h 110, frame 1
+action 1 (move) : w 50, h 110, frame 5
+action 2 (serve wait) : w 70 h 110, frame 1
+action 3 (drive serve ready): w 70 h 110, frame 4
+action 4 (drive serve wait): w 70 h 110, frame 1
+action 5 (drive serve hit): w 70 h 110, frame 3
+action 6 (receive): w 70 h 110, frame 5
