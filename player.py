@@ -37,6 +37,88 @@ def time_out(e):
     return e[0] == 'TIME_OUT'
 
 
+class SpikeServeHit:
+    @staticmethod
+    def enter(player, e): # DriveServeHit 상태로 들어갈 때 할 것
+        player.frame = 8
+        player.action = 5
+        player.frame_num = 6
+        player.frame_len = 80
+        player.action_len = 210
+
+    @staticmethod
+    def exit(player, e): # DriveServeHit 상태에서 나올 때 할 것
+        pass
+
+    @staticmethod
+    def do(player): # DriveServeHit 상태인 동안 할 것
+        if player.frame == 5:
+            player.state_machine.handle_event(('TIME_OUT', 0))
+        player.frame = (player.frame + 1) % player.frame_num
+        delay(0.05)
+
+    @staticmethod
+    def draw(player): # player 그리기
+        player.image.clip_draw(player.frame * player.frame_len,
+                              player.action * player.action_len,
+                              player.frame_len, player.action_len, player.x, player.y)
+
+
+class SpikeServeWait:
+    @staticmethod
+    def enter(player, e): # DriveServeWait 상태로 들어갈 때 할 것
+        player.frame = 0
+        player.action = 7
+        player.frame_num = 1
+        player.frame_len = 80
+        player.action_len = 210
+        player.start_time = get_time()
+
+    @staticmethod
+    def exit(player, e): # DriveServeWait 상태에서 나올 때 할 것
+        pass
+
+    @staticmethod
+    def do(player): # DriveServeWait 상태인 동안 할 것
+        player.frame = (player.frame + 1) % player.frame_num
+        if get_time() - player.start_time > 1.5:
+            player.state_machine.handle_event(('TIME_OUT', 0))
+
+
+    @staticmethod
+    def draw(player): # player 그리기
+        player.image.clip_draw(player.frame * player.frame_len,
+                              player.action * player.action_len,
+                              player.frame_len, player.action_len, player.x, player.y)
+
+
+class SpikeServeReady:
+    @staticmethod
+    def enter(player, e): # SpikeServeReady 상태로 들어갈 때 할 것
+        player.frame = 0
+        player.action = 6
+        player.frame_num = 10
+        player.frame_len = 80
+        player.action_len = 210
+
+    @staticmethod
+    def exit(player, e): # SpikeServeReady 상태에서 나올 때 할 것
+        player.make_ball()
+
+    @staticmethod
+    def do(player): # SpikeServeReady 상태인 동안 할 것
+        if player.frame == 9:
+            player.state_machine.handle_event(('TIME_OUT', 0))
+        player.frame = (player.frame + 1) % player.frame_num
+        delay(0.05)
+
+    @staticmethod
+    def draw(player): # player 그리기
+        player.image.clip_draw(player.frame * player.frame_len,
+                              player.action * player.action_len,
+                              player.frame_len, player.action_len, player.x, player.y)
+
+
 class DriveServeHit:
     @staticmethod
     def enter(player, e): # DriveServeHit 상태로 들어갈 때 할 것
@@ -207,10 +289,13 @@ class StateMachine:
         self.table = {
             Idle: {right_down: Move, right_up: Move, left_down: Move, left_up: Move, space_down: ServeWait},
             Move: {right_down: Idle, right_up: Idle, left_down: Idle, left_up: Idle},
-            ServeWait: {space_down: DriveServeReady, time_out: Idle},
+            ServeWait: {right_down: DriveServeReady, left_down: SpikeServeReady, time_out: Idle},
             DriveServeReady: {time_out: DriveServeWait},
             DriveServeWait: {space_down: DriveServeHit, time_out: Idle},
-            DriveServeHit: {time_out: Idle}
+            DriveServeHit: {time_out: Idle},
+            SpikeServeReady: {time_out: SpikeServeWait},
+            SpikeServeWait: {space_down: SpikeServeHit, time_out: Idle},
+            SpikeServeHit: {time_out: Idle}
         }
 
     def start(self):
