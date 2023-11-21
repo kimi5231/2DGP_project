@@ -1,5 +1,5 @@
 from pico2d import load_image, get_time, delay, draw_rectangle
-from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_SPACE
+from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_SPACE, SDLK_a
 
 import game_world
 from ball import Ball
@@ -33,8 +33,39 @@ def space_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_SPACE
 
 
+def a_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_a
+
+
 def time_out(e):
     return e[0] == 'TIME_OUT'
+
+
+class Receive:
+    @staticmethod
+    def enter(player, e): # Receive 상태로 들어갈 때 할 것
+        player.frame = 0
+        player.action = 6
+        player.frame_num = 5
+        player.frame_len = 70
+        player.action_len = 110
+
+    @staticmethod
+    def exit(player, e): # Receive 상태에서 나올 때 할 것
+        pass
+
+    @staticmethod
+    def do(player): # Receive 상태인 동안 할 것
+        if player.frame == 4:
+            player.state_machine.handle_event(('TIME_OUT', 0))
+        player.frame = (player.frame + 1) % player.frame_num
+        delay(0.05)
+
+    @staticmethod
+    def draw(player): # player 그리기
+        player.image_110.clip_draw(player.frame * player.frame_len,
+                              player.action * player.action_len,
+                              player.frame_len, player.action_len, player.x, player.y)
 
 
 class SpikeServeHit:
@@ -287,7 +318,7 @@ class StateMachine:
         self.player = player
         self.cur_state = Idle
         self.table = {
-            Idle: {right_down: Move, right_up: Move, left_down: Move, left_up: Move, space_down: ServeWait},
+            Idle: {right_down: Move, right_up: Move, left_down: Move, left_up: Move, space_down: ServeWait, a_down: Receive},
             Move: {right_down: Idle, right_up: Idle, left_down: Idle, left_up: Idle},
             ServeWait: {right_down: DriveServeReady, left_down: SpikeServeReady, time_out: Idle},
             DriveServeReady: {time_out: DriveServeWait},
@@ -295,7 +326,8 @@ class StateMachine:
             DriveServeHit: {time_out: Idle},
             SpikeServeReady: {time_out: SpikeServeWait},
             SpikeServeWait: {space_down: SpikeServeHit, time_out: Idle},
-            SpikeServeHit: {time_out: Idle}
+            SpikeServeHit: {time_out: Idle},
+            Receive: {time_out: Idle}
         }
 
     def start(self):
