@@ -40,8 +40,8 @@ def time_out(e):
 class SpikeServeHit:
     @staticmethod
     def enter(player, e): # DriveServeHit 상태로 들어갈 때 할 것
-        player.frame = 8
-        player.action = 5
+        player.frame = 0
+        player.action = 2
         player.frame_num = 6
         player.frame_len = 80
         player.action_len = 210
@@ -59,16 +59,16 @@ class SpikeServeHit:
 
     @staticmethod
     def draw(player): # player 그리기
-        player.image.clip_draw(player.frame * player.frame_len,
+        player.image_210.clip_draw(player.frame * player.frame_len,
                               player.action * player.action_len,
-                              player.frame_len, player.action_len, player.x, player.y)
+                              player.frame_len, player.action_len, player.x, player.y+50)
 
 
 class SpikeServeWait:
     @staticmethod
     def enter(player, e): # DriveServeWait 상태로 들어갈 때 할 것
         player.frame = 0
-        player.action = 7
+        player.action = 1
         player.frame_num = 1
         player.frame_len = 80
         player.action_len = 210
@@ -87,16 +87,16 @@ class SpikeServeWait:
 
     @staticmethod
     def draw(player): # player 그리기
-        player.image.clip_draw(player.frame * player.frame_len,
+        player.image_210.clip_draw(player.frame * player.frame_len,
                               player.action * player.action_len,
-                              player.frame_len, player.action_len, player.x, player.y)
+                              player.frame_len, player.action_len, player.x, player.y+50)
 
 
 class SpikeServeReady:
     @staticmethod
     def enter(player, e): # SpikeServeReady 상태로 들어갈 때 할 것
         player.frame = 0
-        player.action = 6
+        player.action = 0
         player.frame_num = 10
         player.frame_len = 80
         player.action_len = 210
@@ -114,9 +114,9 @@ class SpikeServeReady:
 
     @staticmethod
     def draw(player): # player 그리기
-        player.image.clip_draw(player.frame * player.frame_len,
+        player.image_210.clip_draw(player.frame * player.frame_len,
                               player.action * player.action_len,
-                              player.frame_len, player.action_len, player.x, player.y)
+                              player.frame_len, player.action_len, player.x, player.y+50)
 
 
 class DriveServeHit:
@@ -141,7 +141,7 @@ class DriveServeHit:
 
     @staticmethod
     def draw(player): # player 그리기
-        player.image.clip_draw(player.frame * player.frame_len,
+        player.image_110.clip_draw(player.frame * player.frame_len,
                               player.action * player.action_len,
                               player.frame_len, player.action_len, player.x, player.y)
 
@@ -169,7 +169,7 @@ class DriveServeWait:
 
     @staticmethod
     def draw(player): # player 그리기
-        player.image.clip_draw(player.frame * player.frame_len,
+        player.image_110.clip_draw(player.frame * player.frame_len,
                               player.action * player.action_len,
                               player.frame_len, player.action_len, player.x, player.y)
 
@@ -196,7 +196,7 @@ class DriveServeReady:
 
     @staticmethod
     def draw(player): # player 그리기
-        player.image.clip_draw(player.frame * player.frame_len,
+        player.image_110.clip_draw(player.frame * player.frame_len,
                               player.action * player.action_len,
                               player.frame_len, player.action_len, player.x, player.y)
 
@@ -224,7 +224,7 @@ class ServeWait:
 
     @staticmethod
     def draw(player): # player 그리기
-        player.image.clip_draw(player.frame * player.frame_len,
+        player.image_110.clip_draw(player.frame * player.frame_len,
                               player.action * player.action_len,
                               player.frame_len, player.action_len, player.x, player.y)
 
@@ -253,7 +253,7 @@ class Move:
 
     @staticmethod
     def draw(player): # player 그리기
-        player.image.clip_draw(player.frame * player.frame_len,
+        player.image_110.clip_draw(player.frame * player.frame_len,
                               player.action * player.action_len,
                               player.frame_len, player.action_len, player.x, player.y)
 
@@ -277,7 +277,7 @@ class Idle:
 
     @staticmethod
     def draw(player): # player 그리기
-        player.image.clip_draw(player.frame * player.frame_len,
+        player.image_110.clip_draw(player.frame * player.frame_len,
                               player.action * player.action_len,
                               player.frame_len, player.action_len, player.x, player.y)
 
@@ -325,7 +325,8 @@ class Player:
         self.frame_num = 1
         self.frame_len = 50
         self.action_len = 110
-        self.image = load_image('player.png')
+        self.image_110 = load_image('player_h110.png')
+        self.image_210 = load_image('player_h210.png')
         self.state_machine = StateMachine(self)
         self.state_machine.start()
 
