@@ -109,3 +109,4 @@ class Ball:
     def handle_collision(self, group, other):
         if group == 'player:ball':
             self.dirX = 1
+            self.dirY = 1

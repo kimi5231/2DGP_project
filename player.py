@@ -346,7 +346,14 @@ class Player:
         game_world.add_object(ball, 1)
 
     def get_bb(self):
-        return self.x - 25, self.y - 55, self.x + 25, self.y + 55
+        if self.state_machine.cur_state == Move:
+            return self.x - 25, self.y - 55, self.x + 25, self.y + 55
+        elif self.state_machine.cur_state == DriveServeHit:
+            return self.x + 5, self.y + 5, self.x + 25, self.y - 5
+        elif self.state_machine.cur_state == SpikeServeHit:
+            return self.x + 10, self.y + 120, self.x + 20, self.y + 100
+        else:
+            return 0, 0, 0, 0
 
     def handle_collision(self, group, other):
         if group == 'player:ball':
