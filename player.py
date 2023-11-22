@@ -1,12 +1,13 @@
 from pico2d import load_image, get_time, delay, draw_rectangle
 from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_SPACE, SDLK_a
 
+import game_framework
 import game_world
 from ball import Ball
 
 # player move speed
 PIXEL_PER_METER = (10.0 / 0.3) # 10 pixel 30 cm
-MOVE_SPEED_KMPH = 5.0 # Km / Hour
+MOVE_SPEED_KMPH = 10.0 # Km / Hour
 MOVE_SPEED_MPM = (MOVE_SPEED_KMPH * 1000.0 / 60.0)
 MOVE_SPEED_MPS = (MOVE_SPEED_MPM / 60.0)
 MOVE_SPEED_PPS = (MOVE_SPEED_MPS * PIXEL_PER_METER)
@@ -279,7 +280,8 @@ class Move:
     @staticmethod
     def do(player): # Move 상태인 동안 할 것
         player.frame = (player.frame + 1) % player.frame_num
-        player.x += player.dir * player.speed
+        player.x += player.dir * MOVE_SPEED_PPS * game_framework.frame_time
+
 
     @staticmethod
     def draw(player): # player 그리기

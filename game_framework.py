@@ -17,7 +17,6 @@ def run(start_mode):
         frame_time = time.time() - current_time
         frame_rate = 1.0 / frame_time
         current_time += frame_time
-        print(f'Frame Time: {frame_time}, Frame Rate: {frame_rate}')
 
     while (len(stack) > 0): # 스택에 남아있는 모든 게임 모드들을 차례대로 제거
         stack[-1].finish()
