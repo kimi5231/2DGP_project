@@ -4,13 +4,12 @@ from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_SPACE, SDLK
 import game_world
 from ball import Ball
 
-PLAYER_H = 110
-MOVE_W = 50
-MOVE_N = 5
-DRIVE_W = 70
-DRIVE_READY_N = 4
-DRIVE_WAIT_N = 1
-DRIVE_HIT_N = 3
+# player move speed
+PIXEL_PER_METER = (10.0 / 0.3) # 10 pixel 30 cm
+MOVE_SPEED_KMPH = 5.0 # Km / Hour
+MOVE_SPEED_MPM = (MOVE_SPEED_KMPH * 1000.0 / 60.0)
+MOVE_SPEED_MPS = (MOVE_SPEED_MPM / 60.0)
+MOVE_SPEED_PPS = (MOVE_SPEED_MPS * PIXEL_PER_METER)
 
 
 def right_down(e):
