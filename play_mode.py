@@ -51,7 +51,6 @@ def finish():
 def update():
     game_world.update()
     game_world.handle_collisions()
-    delay(0.05)
 
 
 def draw():
