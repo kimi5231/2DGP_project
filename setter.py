@@ -57,9 +57,19 @@ class Setter:
         else:
             return BehaviorTree.FAIL
 
-    def toss(self):
+    def toss_ready(self):
         self.action = 1
-        self.frame_num = 10
+        self.frame_num = 7
+        self.frame_len = 60
+
+    def toss_wait(self):
+        self.action = 2
+        self.frame_num = 1
+        self.frame_len = 60
+
+    def toss_ready(self):
+        self.action = 3
+        self.frame_num = 3
         self.frame_len = 60
 
     def build_behavior_tree(self):
