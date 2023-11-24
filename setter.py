@@ -26,6 +26,7 @@ class Setter:
                                    self.action * self.action_len,
                                    self.frame_len, self.action_len, sx, sy, 33, 66)
 
+
     def update(self):
         pass
 
@@ -34,3 +35,9 @@ class Setter:
         sy = self.y - server.background.window_bottom
 
         return sx - 25, sy - 55, sx + 25, sy + 55
+
+    def handle_collision(self, group, other):
+        if group == 'setter:ball':
+            pass
+
+    
