@@ -8,7 +8,7 @@ class Score:
         self.font = load_font('ENCR10B.TTF', 30)
 
     def draw(self):
-        self.font.draw(300, 550, f'{self.player_score} : {self.ai_score}', (255, 255, 255))
+        self.font.draw(260, 550, f'{self.player_score} : {self.ai_score}', (255, 255, 255))
 
     def update(self):
         pass
