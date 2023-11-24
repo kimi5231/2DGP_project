@@ -4,7 +4,7 @@ import game_framework
 import game_world
 import server
 from ball import Ball
-from court import Court
+from background import Background
 from player import Player
 from score import Score
 from timer import Timer
@@ -45,7 +45,7 @@ def init():
     #
     # game_world.add_collision_pair('player:ball', player, None)
 
-    server.background = Court()
+    server.background = Background()
     game_world.add_object(server.background, 0)
 
     server.player = Player()

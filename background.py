@@ -3,7 +3,7 @@ from pico2d import load_image, get_canvas_width, get_canvas_height, clamp
 import server
 
 
-class Court:
+class Background:
     def __init__(self):
         self.image = load_image('background.png')
         self.court_image = load_image('court.png')
@@ -12,12 +12,18 @@ class Court:
         self.ch = get_canvas_height()  # 화면의 높이
         self.w = self.image.w
         self.h = self.image.h
+        self.court_x, self.court_y = 500, 51
+        self.net_x, self.net_y = 500, 97
 
     def draw(self):
-        # self.image.draw(500, 300, 1000, 600)
-        # self.court_image.draw(500, 51, 600, 10)
-        # self.net_image.draw(500, 130, 30, 150)
+        court_sx = self.court_x - server.background.window_left
+        court_sy = self.court_y - server.background.window_bottom
+        net_sx = self.net_x - server.background.window_left
+        net_sy = self.net_y - server.background.window_bottom
+
         self.image.clip_draw_to_origin(self.window_left, self.window_bottom, self.cw, self.ch, 0, 0)
+        self.court_image.clip_draw(0, 0, 600, 10, court_sx, court_sy)
+        self.net_image.clip_draw(0, 0, 10, 81, net_sx, net_sy)
 
     def update(self):
         self.window_left = int(server.player.x) - self.cw // 2
