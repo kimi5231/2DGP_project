@@ -7,6 +7,7 @@ from ball import Ball
 from background import Background
 from player import Player
 from score import Score
+from setter import Setter
 from timer import Timer
 
 
@@ -32,9 +33,14 @@ def init():
     game_world.add_object(server.player, 1)
     game_world.add_collision_pair('player:ball', server.player, None)
 
+    server.setter = Setter()
+    game_world.add_object(server.setter, 1)
+    game_world.add_collision_pair('setter:ball', server.setter, None)
+
     server.ball = Ball(server.player.x + 25, server.player.y + 10, 0, 1, 5)
     game_world.add_object(server.ball, 1)
-    game_world.add_collision_pair('boy:ball', None, server.ball)
+    game_world.add_collision_pair('player:ball', None, server.ball)
+    game_world.add_collision_pair('setter:ball', None, server.ball)
 
     server.timer = Timer()
     game_world.add_object(server.timer, 1)

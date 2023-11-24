@@ -1,6 +1,7 @@
 background = None
 
 player = None
+setter = None
 
 ball = None
 
