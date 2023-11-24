@@ -284,7 +284,8 @@ class Move:
 
     @staticmethod
     def do(player): # Move 상태인 동안 할 것
-        player.frame = (player.frame + player.frame_num * ACTION_PER_TIME * game_framework.frame_time) % player.frame_num
+        player.frame = ((player.frame + player.frame_num * ACTION_PER_TIME * game_framework.frame_time)
+                        % player.frame_num)
         player.x += player.dir * MOVE_SPEED_PPS * game_framework.frame_time
 
 
@@ -293,8 +294,8 @@ class Move:
         sx = player.x - server.background.window_left
         sy = player.y - server.background.window_bottom
         player.image_110.clip_draw(int(player.frame) * player.frame_len,
-                              player.action * player.action_len,
-                              player.frame_len, player.action_len, sx, sy)
+                                   player.action * player.action_len,
+                                   player.frame_len, player.action_len, sx, sy, 33, 66)
 
 
 class Idle:
@@ -312,13 +313,16 @@ class Idle:
 
     @staticmethod
     def do(player): # Move 상태인 동안 할 것
-        player.frame = (player.frame + 1) % player.frame_num
+        player.frame = ((player.frame + player.frame_num * ACTION_PER_TIME * game_framework.frame_time)
+                        % player.frame_num)
 
     @staticmethod
     def draw(player): # player 그리기
-        player.image_110.clip_draw(player.frame * player.frame_len,
-                              player.action * player.action_len,
-                              player.frame_len, player.action_len, player.x, player.y)
+        sx = player.x - server.background.window_left
+        sy = player.y - server.background.window_bottom
+        player.image_110.clip_draw(int(player.frame) * player.frame_len,
+                                   player.action * player.action_len,
+                                   player.frame_len, player.action_len, sx, sy, 33, 66)
 
 
 class StateMachine:
