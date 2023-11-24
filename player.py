@@ -363,8 +363,8 @@ class StateMachine:
 
 class Player:
     def __init__(self):
-        self.x = server.background.w // 2
-        self.y = server.background.h // 2
+        self.x = 100
+        self.y = 85
         self.dir = 0
         self.frame = 0
         self.action = 0
