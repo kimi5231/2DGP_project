@@ -25,26 +25,6 @@ def handle_events():
 
 
 def init():
-    # global running
-    # global court
-    # global player
-    #
-    # running = True
-    #
-    # court = Court()
-    # game_world.add_object(court, 0)
-    #
-    # player = Player()
-    # game_world.add_object(player, 1)
-    #
-    # timer = Timer()
-    # game_world.add_object(timer, 1)
-    #
-    # score = Score()
-    # game_world.add_object(score, 1)
-    #
-    # game_world.add_collision_pair('player:ball', player, None)
-
     server.background = Background()
     game_world.add_object(server.background, 0)
 
@@ -52,9 +32,15 @@ def init():
     game_world.add_object(server.player, 1)
     game_world.add_collision_pair('player:ball', server.player, None)
 
-    # server.ball = Ball()
-    # game_world.add_object(server.ball, 1)
-    # game_world.add_collision_pair('boy:ball', None, server.ball)
+    server.ball = Ball(server.player.x + 25, server.player.y + 10, 0, 1, 5)
+    game_world.add_object(server.ball, 1)
+    game_world.add_collision_pair('boy:ball', None, server.ball)
+
+    server.timer = Timer()
+    game_world.add_object(server.timer, 1)
+
+    server.score = Score()
+    game_world.add_object(server.score, 1)
 
 
 def finish():
