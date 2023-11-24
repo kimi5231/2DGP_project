@@ -2,6 +2,8 @@ from pico2d import *
 
 import game_framework
 import game_world
+import server
+from ball import Ball
 from court import Court
 from player import Player
 from score import Score
@@ -19,29 +21,40 @@ def handle_events():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             game_framework.quit()
         else:
-            player.handle_event(event)
+            server.player.handle_event(event)
 
 
 def init():
-    global running
-    global court
-    global player
+    # global running
+    # global court
+    # global player
+    #
+    # running = True
+    #
+    # court = Court()
+    # game_world.add_object(court, 0)
+    #
+    # player = Player()
+    # game_world.add_object(player, 1)
+    #
+    # timer = Timer()
+    # game_world.add_object(timer, 1)
+    #
+    # score = Score()
+    # game_world.add_object(score, 1)
+    #
+    # game_world.add_collision_pair('player:ball', player, None)
 
-    running = True
+    server.background = Court()
+    game_world.add_object(server.background, 0)
 
-    court = Court()
-    game_world.add_object(court, 0)
+    server.player = Player()
+    game_world.add_object(server.player, 1)
+    game_world.add_collision_pair('player:ball', server.player, None)
 
-    player = Player()
-    game_world.add_object(player, 1)
-
-    timer = Timer()
-    game_world.add_object(timer, 1)
-
-    score = Score()
-    game_world.add_object(score, 1)
-
-    game_world.add_collision_pair('player:ball', player, None)
+    # server.ball = Ball()
+    # game_world.add_object(server.ball, 1)
+    # game_world.add_collision_pair('boy:ball', None, server.ball)
 
 
 def finish():

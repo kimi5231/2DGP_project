@@ -1,8 +1,9 @@
-from pico2d import load_image, get_time, delay, draw_rectangle
+from pico2d import load_image, get_time, delay, draw_rectangle, clamp
 from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_SPACE, SDLK_a
 
 import game_framework
 import game_world
+import server
 from ball import Ball
 
 # player move speed
@@ -289,9 +290,11 @@ class Move:
 
     @staticmethod
     def draw(player): # player 그리기
+        sx = player.x - server.background.window_left
+        sy = player.y - server.background.window_bottom
         player.image_110.clip_draw(int(player.frame) * player.frame_len,
                               player.action * player.action_len,
-                              player.frame_len, player.action_len, player.x, player.y)
+                              player.frame_len, player.action_len, sx, sy)
 
 
 class Idle:
@@ -357,6 +360,8 @@ class StateMachine:
 class Player:
     def __init__(self):
         self.x, self.y, self.dir, self.speed = 300, 105, 0, 10
+        self.x = server.background.w // 2
+        self.y = server.background.h // 2
         self.frame = 0
         self.action = 0
         self.frame_num = 1
@@ -369,10 +374,11 @@ class Player:
 
     def draw(self):
         self.state_machine.draw()
-        draw_rectangle(*self.get_bb())
 
     def update(self):
         self.state_machine.update()
+        self.x = clamp(30, self.x, server.background.w - 40)
+        self.y = clamp(30, self.y, server.background.h - 40)
 
     def handle_event(self, event):
         self.state_machine.handle_event(('INPUT', event))
@@ -383,8 +389,11 @@ class Player:
         game_world.add_object(ball, 1)
 
     def get_bb(self):
+        sx = self.x - server.background.window_left
+        sy = self.y - server.background.window_bottom
+
         if self.state_machine.cur_state == Move:
-            return self.x - 25, self.y - 55, self.x + 25, self.y + 55
+            return sx - 25, sy - 55, sx + 25, sy + 55
         elif self.state_machine.cur_state == DriveServeHit:
             return self.x + 5, self.y - 5, self.x + 25, self.y + 5
         elif self.state_machine.cur_state == SpikeServeHit:
