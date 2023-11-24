@@ -386,9 +386,9 @@ class Player:
         if self.state_machine.cur_state == Move:
             return self.x - 25, self.y - 55, self.x + 25, self.y + 55
         elif self.state_machine.cur_state == DriveServeHit:
-            return self.x + 5, self.y + 5, self.x + 25, self.y - 5
+            return self.x + 5, self.y - 5, self.x + 25, self.y + 5
         elif self.state_machine.cur_state == SpikeServeHit:
-            return self.x + 10, self.y + 120, self.x + 20, self.y + 100
+            return self.x + 10, self.y + 100, self.x + 20, self.y + 120
         else:
             return 0, 0, 0, 0
 
