@@ -11,10 +11,6 @@ Gravity_SPEED_MPS = (Gravity_SPEED_MPM / 60.0)
 Gravity_SPEED_PPS = (Gravity_SPEED_MPS * PIXEL_PER_METER)
 
 
-def space_down(e):
-    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_SPACE
-
-
 def time_out(e):
     return e[0] == 'TIME_OUT'
 
@@ -71,7 +67,7 @@ class StateMachine:
         self.ball = ball
         self.cur_state = Ready
         self.table = {
-            Ready: {space_down: Fly}
+            
         }
 
     def start(self):
