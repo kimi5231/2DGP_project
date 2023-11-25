@@ -1,4 +1,4 @@
-world = [ [], [] ]
+world = [ [], [], [], [] ]
 collision_pairs = {}
 
 def add_object(o, depth): # 게임 월드에 객체 담기
