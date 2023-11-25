@@ -33,9 +33,13 @@ def init():
     game_world.add_object(server.player, 1)
     game_world.add_collision_pair('player:ball', server.player, None)
 
-    server.setter = Setter()
+    server.setter = Setter(485, 85)
     game_world.add_object(server.setter, 1)
     game_world.add_collision_pair('setter:ball', server.setter, None)
+
+    server.enemy_setter = Setter(515, 85)
+    game_world.add_object(server.enemy_setter, 1)
+    game_world.add_collision_pair('setter:ball', server.enemy_setter, None)
 
     server.ball = Ball(server.setter.x + 25, server.setter.y + 10, 0, 1, 5)
     game_world.add_object(server.ball, 1)

@@ -14,9 +14,8 @@ ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 
 
 class Setter:
-    def __init__(self):
-        self.x = 485
-        self.y = 85
+    def __init__(self, x, y):
+        self.x, self.y = x, y
         self.frame = 0
         self.action = 0
         self.frame_num = 1
