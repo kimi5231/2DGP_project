@@ -1,0 +1,4 @@
+action 0 (idle) : w 50, h 110, frame 1
+action 1 (toss ready) : w 60, h 110, frame 7
+action 2 (toss wait) : w 60 h 110, frame 1
+action 3 (toss hit): w 60 h 110, frame 4
