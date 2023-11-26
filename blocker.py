@@ -79,6 +79,23 @@ class Blocker:
         distance2 = (x1 - x2) ** 2 + (y1 - y2) ** 2
         return distance2 < (PIXEL_PER_METER * r) ** 2
 
+    def is_move_to_net(self, r = 0.5):
+        if self.distance_less_than(server.background.net_x, server.background.net_y, self.x, self.y, r):
+            return BehaviorTree.FAIL
+        else:
+            return BehaviorTree.SUCCESS
+
+    def move_to_net(self, r=0.5):
+        self.action = 1
+        self.frame_num = 5
+        self.frame_len = 50
+        self.action_len = 110
+        self.x += self.dir * MOVE_SPEED_PPS * game_framework.frame_time
+        if self.distance_less_than(server.background.net_x, server.background.net_y, self.x, self.y, r):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
+
     def is_ball_nearby(self, distance):
         if self.distance_less_than(server.ball.x, server.ball.y, self.x, self.y, distance) \
                 and server.ball.y > self.y:
@@ -86,15 +103,8 @@ class Blocker:
         else:
             return BehaviorTree.FAIL
 
-    def move_to_net(self, r=0.5):
-        self.x += self.dir * MOVE_SPEED_PPS * game_framework.frame_time
-        if self.distance_less_than(server.background.net_x, server.background.net_y, self.x, self.y, r):
-            return BehaviorTree.SUCCESS
-        else:
-            return BehaviorTree.RUNNING
-
     def blocking_ready(self):
-        self.action = 1
+        self.action = 2
         self.frame_num = 2
         self.frame_len = 50
         self.action_len = 110
@@ -112,7 +122,7 @@ class Blocker:
             return BehaviorTree.FAIL
 
     def blocking_wait(self):
-        self.action = 2
+        self.action = 3
         self.frame_num = 1
         self.frame_len = 50
         self.action_len = 110
@@ -143,9 +153,15 @@ class Blocker:
 
         c2 = Condition('공이 근처에 있는가?', self.is_ball_nearby, 7)
         a2 = Action('blocking ready', self.blocking_ready)
+
+        c5 = Condition('네트 앞으로 가야 하는가?', self.is_move_to_net)
         a5 = Action('move to net', self.move_to_net)
 
-        SEQ_change_blocking_ready_state = Sequence('blocking ready 상태로 변경', c2, a5, a2)
+        SEQ_move_to_net_front = Sequence('네트 앞으로 이동', c5, a5)
+        SEQ_change_blocking_ready_state = Sequence('blocking ready 상태로 변경', c2, a2)
+
+        SEL_move_to_net_front_or_change_blocking_ready_state = Selector('네트 앞으로 이동 또는 blocking ready 상태로 변경',
+                                                                        SEQ_move_to_net_front, SEQ_change_blocking_ready_state)
 
         c3 = Condition('현재 상태가 blocking wait 인가?', self.is_cur_state_blocking_wait)
         a3 = Action('blocking wait', self.blocking_wait)
@@ -161,7 +177,7 @@ class Blocker:
             'blocking hit or blocking wait or blocking ready or Idle',
                     SEQ_keep_blocking_hit_state,
                     SEQ_keep_blocking_wait_state,
-                    SEQ_change_blocking_ready_state,
+                    SEL_move_to_net_front_or_change_blocking_ready_state,
                     SEQ_keep_Idle_state)
 
         self.bt = BehaviorTree(root)
