@@ -18,9 +18,8 @@ ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 
 
 class Blocker:
-    def __init__(self, x, y):
-        self.x, self.y = x, y
-        self.dir = 1
+    def __init__(self, x, y, dir):
+        self.x, self.y, self.dir = x, y, dir
         self.frame = 0
         self.action = 0
         self.frame_num = 1

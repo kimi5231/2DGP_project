@@ -24,7 +24,8 @@ def handle_events():
             game_framework.quit()
         else:
             server.player.handle_event(event)
-            server.blocker.handle_event(event)
+            server.blocker1.handle_event(event)
+            server.blocker2.handle_event(event)
 
 
 def init():
@@ -35,22 +36,25 @@ def init():
     game_world.add_object(server.player, 1)
     game_world.add_collision_pair('player:ball', server.player, None)
 
-    # server.setter = Setter(485, 85)
-    # game_world.add_object(server.setter, 1)
-    # game_world.add_collision_pair('setter:ball', server.setter, None)
+    server.setter = Setter(485, 85)
+    game_world.add_object(server.setter, 1)
+    game_world.add_collision_pair('setter:ball', server.setter, None)
 
-    server.blocker = Blocker(470, 85)
-    game_world.add_object(server.blocker, 1)
-    game_world.add_collision_pair('blocker:ball', server.blocker, None)
+    server.blocker1 = Blocker(470, 85, 1)
+    game_world.add_object(server.blocker1, 2)
+    server.blocker2 = Blocker(465, 85, 1)
+    game_world.add_object(server.blocker2, 3)
+    game_world.add_collision_pair('blocker:ball', server.blocker1, None)
+    game_world.add_collision_pair('blocker:ball', server.blocker2, None)
 
-    # server.enemy_setter = Setter(515, 85)
-    # game_world.add_object(server.enemy_setter, 1)
-    # game_world.add_collision_pair('setter:ball', server.enemy_setter, None)
+    server.enemy_setter = Setter(515, 85)
+    game_world.add_object(server.enemy_setter, 1)
 
-    server.ball = Ball(server.blocker.x + 25, server.blocker.y + 10, 0, 1, 5)
+    server.ball = Ball(server.blocker1.x + 25, server.blocker1.y + 10, 0, 1, 5)
     game_world.add_object(server.ball, 1)
     game_world.add_collision_pair('player:ball', None, server.ball)
     game_world.add_collision_pair('setter:ball', None, server.ball)
+    game_world.add_collision_pair('blocker:ball', None, server.ball)
 
     server.timer = Timer()
     game_world.add_object(server.timer, 1)

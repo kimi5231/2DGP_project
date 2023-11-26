@@ -3,7 +3,8 @@ background = None
 # plyer team
 player = None
 setter = None
-blocker = None
+blocker1 = None
+blocker2 = None
 
 # enemy team
 spiker = None
