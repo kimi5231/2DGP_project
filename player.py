@@ -1,5 +1,5 @@
 from pico2d import load_image, get_time, delay, draw_rectangle, clamp
-from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_SPACE, SDLK_a
+from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_SPACE, SDLK_a, SDLK_z
 
 import game_framework
 import game_world
@@ -12,6 +12,12 @@ MOVE_SPEED_KMPH = 10.0 # Km / Hour
 MOVE_SPEED_MPM = (MOVE_SPEED_KMPH * 1000.0 / 60.0)
 MOVE_SPEED_MPS = (MOVE_SPEED_MPM / 60.0)
 MOVE_SPEED_PPS = (MOVE_SPEED_MPS * PIXEL_PER_METER)
+
+# player move speed
+SPIKE_SPEED_KMPH = 105.0 # Km / Hour
+SPIKE_SPEED_MPM = (SPIKE_SPEED_KMPH * 1000.0 / 60.0)
+SPIKE_SPEED_MPS = (SPIKE_SPEED_MPM / 60.0)
+SPIKE_SPEED_PPS = (SPIKE_SPEED_MPS * PIXEL_PER_METER)
 
 # player action speed
 TIME_PER_ACTION = 0.5
@@ -42,8 +48,101 @@ def a_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_a
 
 
+def z_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_z
+
+
 def time_out(e):
     return e[0] == 'TIME_OUT'
+
+
+class OpenAttackHit:
+    @staticmethod
+    def enter(player, e):
+        player.frame = 0
+        player.action = 5
+        player.frame_num = 6
+        player.frame_len = 80
+        player.action_len = 210
+
+    @staticmethod
+    def exit(player, e):
+        server.ball.speed_x = SPIKE_SPEED_PPS
+
+    @staticmethod
+    def do(player):
+        if int(player.frame) == 5:
+            player.state_machine.handle_event(('TIME_OUT', 0))
+        player.frame = ((player.frame + player.frame_num * ACTION_PER_TIME * game_framework.frame_time)
+                        % player.frame_num)
+
+    @staticmethod
+    def draw(player):
+        sx = player.x - server.background.window_left
+        sy = player.y - server.background.window_bottom
+        player.image_210.clip_draw(int(player.frame) * player.frame_len,
+                                   player.action * player.action_len,
+                                   player.frame_len, player.action_len, sx, sy + 33, 50, 100)
+
+
+class OpenAttackWait:
+    @staticmethod
+    def enter(player, e):
+        player.frame = 0
+        player.action = 4
+        player.frame_num = 1
+        player.frame_len = 80
+        player.action_len = 210
+        player.start_time = get_time()
+
+    @staticmethod
+    def exit(player, e):
+        pass
+
+    @staticmethod
+    def do(player):
+        player.frame = ((player.frame + player.frame_num * ACTION_PER_TIME * game_framework.frame_time)
+                        % player.frame_num)
+        if get_time() - player.start_time > 1.5:
+            player.state_machine.handle_event(('TIME_OUT', 0))
+
+
+    @staticmethod
+    def draw(player):
+        sx = player.x - server.background.window_left
+        sy = player.y - server.background.window_bottom
+        player.image_210.clip_draw(int(player.frame) * player.frame_len,
+                                   player.action * player.action_len,
+                                   player.frame_len, player.action_len, sx, sy + 33, 50, 100)
+
+
+class OpenAttackReady:
+    @staticmethod
+    def enter(player, e):
+        player.frame = 0
+        player.action = 3
+        player.frame_num = 7
+        player.frame_len = 80
+        player.action_len = 210
+
+    @staticmethod
+    def exit(player, e):
+        pass
+
+    @staticmethod
+    def do(player):
+        if int(player.frame) == 6:
+            player.state_machine.handle_event(('TIME_OUT', 0))
+        player.frame = ((player.frame + player.frame_num * ACTION_PER_TIME * game_framework.frame_time)
+                        % player.frame_num)
+
+    @staticmethod
+    def draw(player):
+        sx = player.x - server.background.window_left
+        sy = player.y - server.background.window_bottom
+        player.image_210.clip_draw(int(player.frame) * player.frame_len,
+                                   player.action * player.action_len,
+                                   player.frame_len, player.action_len, sx, sy+20, 50, 100)
 
 
 class Receive:
@@ -349,7 +448,7 @@ class StateMachine:
         self.player = player
         self.cur_state = Idle
         self.table = {
-            Idle: {right_down: Move, right_up: Move, left_down: Move, left_up: Move, space_down: ServeWait, a_down: Receive},
+            Idle: {right_down: Move, right_up: Move, left_down: Move, left_up: Move, space_down: ServeWait, a_down: Receive, z_down:OpenAttackReady},
             Move: {right_down: Idle, right_up: Idle, left_down: Idle, left_up: Idle},
             ServeWait: {right_down: DriveServeReady, left_down: SpikeServeReady, time_out: Idle},
             DriveServeReady: {time_out: DriveServeWait},
@@ -358,7 +457,10 @@ class StateMachine:
             SpikeServeReady: {time_out: SpikeServeWait},
             SpikeServeWait: {space_down: SpikeServeHit, time_out: Idle},
             SpikeServeHit: {time_out: Idle},
-            Receive: {time_out: Idle}
+            Receive: {time_out: Idle},
+            OpenAttackReady: {time_out: OpenAttackWait},
+            OpenAttackWait: {z_down: OpenAttackHit, time_out: Idle},
+            OpenAttackHit: {time_out: Idle}
         }
 
     def start(self):

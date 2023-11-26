@@ -1,6 +1,6 @@
 action 0 (spike serve ready): w 80 h 210, frame 10
 action 1 (spike serve wait): w 80 h 210, frame 1
 action 2 (spike serve hit): w 80 h 210, frame 6
-action 3 (attak ready): w 80 h 210, frame 7
-action 4 (attak wait): w 80 h 210, frame 1
-action 5 (attak hit): w 80 h 210, frame 6
+action 3 (attack ready): w 80 h 210, frame 7
+action 4 (attack wait): w 80 h 210, frame 1
+action 5 (attack hit): w 80 h 210, frame 6
