@@ -20,6 +20,7 @@ ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 class Blocker:
     def __init__(self, x, y):
         self.x, self.y = x, y
+        self.dir = 1
         self.frame = 0
         self.action = 0
         self.frame_num = 1
@@ -85,6 +86,13 @@ class Blocker:
         else:
             return BehaviorTree.FAIL
 
+    def move_to_net(self, r=0.5):
+        self.x += self.dir * MOVE_SPEED_PPS * game_framework.frame_time
+        if self.distance_less_than(server.background.net_x, server.background.net_y, self.x, self.y, r):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
+
     def blocking_ready(self):
         self.action = 1
         self.frame_num = 2
@@ -135,8 +143,9 @@ class Blocker:
 
         c2 = Condition('공이 근처에 있는가?', self.is_ball_nearby, 7)
         a2 = Action('blocking ready', self.blocking_ready)
+        a5 = Action('move to net', self.move_to_net)
 
-        SEQ_change_blocking_ready_state = Sequence('blocking ready 상태로 변경', c2, a2)
+        SEQ_change_blocking_ready_state = Sequence('blocking ready 상태로 변경', c2, a5, a2)
 
         c3 = Condition('현재 상태가 blocking wait 인가?', self.is_cur_state_blocking_wait)
         a3 = Action('blocking wait', self.blocking_wait)
