@@ -1,4 +1,0 @@
-action 0 (idle) : w 50, h 110, frame 1
-action 1 (blocking ready) : w 60, h 110, frame 2
-action 2 (blocking wait) : w 60 h 110, frame 1
-action 3 (blocking hit): w 60 h 180, frame 7

@@ -1,0 +1,3 @@
+action 0 (idle) : w 50, h 110, frame 1
+action 1 (blocking ready) : w 50, h 110, frame 2
+action 2 (blocking wait) : w 50 h 110, frame 1

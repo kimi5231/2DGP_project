@@ -1,0 +1,1 @@
+action 0 (blocking hit): w 60 h 180, frame 7
