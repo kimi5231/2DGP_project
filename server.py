@@ -9,7 +9,8 @@ blocker2 = None
 # enemy team
 spiker = None
 enemy_setter = None
-enemy_blocker = None
+enemy_blocker1 = None
+enemy_blocker2 = None
 
 ball = None
 

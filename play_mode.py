@@ -6,6 +6,7 @@ import server
 from ball import Ball
 from background import Background
 from blocker import Blocker
+from enemy_blocker import Enemy_Blocker
 from player import Player
 from score import Score
 from setter import Setter
@@ -49,6 +50,14 @@ def init():
 
     server.enemy_setter = Setter(518, 85, -1)
     game_world.add_object(server.enemy_setter, 1)
+    game_world.add_collision_pair('setter:ball', server.enemy_setter, None)
+
+    server.enemy_blocker1 = Enemy_Blocker(536, 85, -1)
+    game_world.add_object(server.enemy_blocker1, 2)
+    server.enemy_blocker2 = Enemy_Blocker(551, 85, -1)
+    game_world.add_object(server.enemy_blocker2, 3)
+    game_world.add_collision_pair('blocker:ball', server.enemy_blocker1, None)
+    game_world.add_collision_pair('blocker:ball', server.enemy_blocker2, None)
 
     server.ball = Ball(server.player.x, server.player.y + 10, 0, 1, 5)
     game_world.add_object(server.ball, 1)
