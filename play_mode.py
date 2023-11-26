@@ -42,7 +42,7 @@ def init():
 
     server.blocker1 = Blocker(470, 85, 1)
     game_world.add_object(server.blocker1, 2)
-    server.blocker2 = Blocker(465, 85, 1)
+    server.blocker2 = Blocker(455, 85, 1)
     game_world.add_object(server.blocker2, 3)
     game_world.add_collision_pair('blocker:ball', server.blocker1, None)
     game_world.add_collision_pair('blocker:ball', server.blocker2, None)
@@ -50,7 +50,7 @@ def init():
     server.enemy_setter = Setter(515, 85)
     game_world.add_object(server.enemy_setter, 1)
 
-    server.ball = Ball(server.blocker1.x + 25, server.blocker1.y + 10, 0, 1, 5)
+    server.ball = Ball(server.setter.x, server.setter.y + 10, 0, 1, 5)
     game_world.add_object(server.ball, 1)
     game_world.add_collision_pair('player:ball', None, server.ball)
     game_world.add_collision_pair('setter:ball', None, server.ball)
