@@ -18,3 +18,5 @@ timer = None
 score = None
 judge = None
 
+
+stage = 1
