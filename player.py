@@ -61,16 +61,18 @@ class Receive:
 
     @staticmethod
     def do(player): # Receive 상태인 동안 할 것
-        if player.frame == 4:
+        if int(player.frame) == 4:
             player.state_machine.handle_event(('TIME_OUT', 0))
-        player.frame = (player.frame + 1) % player.frame_num
-        delay(0.05)
+        player.frame = ((player.frame + player.frame_num * ACTION_PER_TIME * game_framework.frame_time)
+                        % player.frame_num)
 
     @staticmethod
     def draw(player): # player 그리기
-        player.image_110.clip_draw(player.frame * player.frame_len,
-                              player.action * player.action_len,
-                              player.frame_len, player.action_len, player.x, player.y)
+        sx = player.x - server.background.window_left
+        sy = player.y - server.background.window_bottom
+        player.image_110.clip_draw(int(player.frame) * player.frame_len,
+                                   player.action * player.action_len,
+                                   player.frame_len, player.action_len, sx, sy, 40, 66)
 
 
 class SpikeServeHit:
@@ -88,16 +90,18 @@ class SpikeServeHit:
 
     @staticmethod
     def do(player): # DriveServeHit 상태인 동안 할 것
-        if player.frame == 5:
+        if int(player.frame) == 5:
             player.state_machine.handle_event(('TIME_OUT', 0))
-        player.frame = (player.frame + 1) % player.frame_num
-        delay(0.05)
+        player.frame = ((player.frame + player.frame_num * ACTION_PER_TIME * game_framework.frame_time)
+                        % player.frame_num)
 
     @staticmethod
     def draw(player): # player 그리기
-        player.image_210.clip_draw(player.frame * player.frame_len,
-                              player.action * player.action_len,
-                              player.frame_len, player.action_len, player.x, player.y+50)
+        sx = player.x - server.background.window_left
+        sy = player.y - server.background.window_bottom
+        player.image_210.clip_draw(int(player.frame) * player.frame_len,
+                                   player.action * player.action_len,
+                                   player.frame_len, player.action_len, sx, sy + 33, 43, 99)
 
 
 class SpikeServeWait:
@@ -116,16 +120,19 @@ class SpikeServeWait:
 
     @staticmethod
     def do(player): # DriveServeWait 상태인 동안 할 것
-        player.frame = (player.frame + 1) % player.frame_num
+        player.frame = ((player.frame + player.frame_num * ACTION_PER_TIME * game_framework.frame_time)
+                        % player.frame_num)
         if get_time() - player.start_time > 1.5:
             player.state_machine.handle_event(('TIME_OUT', 0))
 
 
     @staticmethod
     def draw(player): # player 그리기
-        player.image_210.clip_draw(player.frame * player.frame_len,
-                              player.action * player.action_len,
-                              player.frame_len, player.action_len, player.x, player.y+50)
+        sx = player.x - server.background.window_left
+        sy = player.y - server.background.window_bottom
+        player.image_210.clip_draw(int(player.frame) * player.frame_len,
+                                   player.action * player.action_len,
+                                   player.frame_len, player.action_len, sx, sy + 33, 43, 99)
 
 
 class SpikeServeReady:
@@ -139,20 +146,22 @@ class SpikeServeReady:
 
     @staticmethod
     def exit(player, e): # SpikeServeReady 상태에서 나올 때 할 것
-        player.make_ball()
+        pass
 
     @staticmethod
     def do(player): # SpikeServeReady 상태인 동안 할 것
-        if player.frame == 9:
+        if int(player.frame) == 9:
             player.state_machine.handle_event(('TIME_OUT', 0))
-        player.frame = (player.frame + 1) % player.frame_num
-        delay(0.05)
+        player.frame = ((player.frame + player.frame_num * (ACTION_PER_TIME//1.5) * game_framework.frame_time)
+                        % player.frame_num)
 
     @staticmethod
     def draw(player): # player 그리기
-        player.image_210.clip_draw(player.frame * player.frame_len,
-                              player.action * player.action_len,
-                              player.frame_len, player.action_len, player.x, player.y+50)
+        sx = player.x - server.background.window_left
+        sy = player.y - server.background.window_bottom
+        player.image_210.clip_draw(int(player.frame) * player.frame_len,
+                                   player.action * player.action_len,
+                                   player.frame_len, player.action_len, sx, sy+20, 43, 99)
 
 
 class DriveServeHit:
@@ -170,16 +179,18 @@ class DriveServeHit:
 
     @staticmethod
     def do(player): # DriveServeHit 상태인 동안 할 것
-        if player.frame == 2:
+        if int(player.frame) == 2:
             player.state_machine.handle_event(('TIME_OUT', 0))
-        player.frame = (player.frame + 1) % player.frame_num
-        delay(0.05)
+        player.frame = ((player.frame + player.frame_num * ACTION_PER_TIME * game_framework.frame_time)
+                        % player.frame_num)
 
     @staticmethod
     def draw(player): # player 그리기
-        player.image_110.clip_draw(player.frame * player.frame_len,
-                              player.action * player.action_len,
-                              player.frame_len, player.action_len, player.x, player.y)
+        sx = player.x - server.background.window_left
+        sy = player.y - server.background.window_bottom
+        player.image_110.clip_draw(int(player.frame) * player.frame_len,
+                                   player.action * player.action_len,
+                                   player.frame_len, player.action_len, sx, sy, 40, 66)
 
 
 class DriveServeWait:
@@ -198,16 +209,19 @@ class DriveServeWait:
 
     @staticmethod
     def do(player): # DriveServeWait 상태인 동안 할 것
-        player.frame = (player.frame + 1) % player.frame_num
+        player.frame = ((player.frame + player.frame_num * ACTION_PER_TIME * game_framework.frame_time)
+                        % player.frame_num)
         if get_time() - player.start_time > 1.5:
             player.state_machine.handle_event(('TIME_OUT', 0))
 
 
     @staticmethod
     def draw(player): # player 그리기
-        player.image_110.clip_draw(player.frame * player.frame_len,
-                              player.action * player.action_len,
-                              player.frame_len, player.action_len, player.x, player.y)
+        sx = player.x - server.background.window_left
+        sy = player.y - server.background.window_bottom
+        player.image_110.clip_draw(int(player.frame) * player.frame_len,
+                                   player.action * player.action_len,
+                                   player.frame_len, player.action_len, sx, sy, 40, 66)
 
 
 class DriveServeReady:
@@ -221,20 +235,22 @@ class DriveServeReady:
 
     @staticmethod
     def exit(player, e): # DriveServeReady 상태에서 나올 때 할 것
-        player.make_ball()
+        pass
 
     @staticmethod
     def do(player): # DriveServeReady 상태인 동안 할 것
-        if player.frame == 3:
+        if int(player.frame) == 3:
             player.state_machine.handle_event(('TIME_OUT', 0))
-        player.frame = (player.frame + 1) % player.frame_num
-        delay(0.05)
+        player.frame = ((player.frame + player.frame_num * ACTION_PER_TIME * game_framework.frame_time)
+                        % player.frame_num)
 
     @staticmethod
     def draw(player): # player 그리기
-        player.image_110.clip_draw(player.frame * player.frame_len,
-                              player.action * player.action_len,
-                              player.frame_len, player.action_len, player.x, player.y)
+        sx = player.x - server.background.window_left
+        sy = player.y - server.background.window_bottom
+        player.image_110.clip_draw(int(player.frame) * player.frame_len,
+                                   player.action * player.action_len,
+                                   player.frame_len, player.action_len, sx, sy, 40, 66)
 
 
 class ServeWait:
@@ -253,16 +269,19 @@ class ServeWait:
 
     @staticmethod
     def do(player): # ServeWait 상태인 동안 할 것
-        player.frame = (player.frame + 1) % player.frame_num
+        player.frame = ((player.frame + player.frame_num * ACTION_PER_TIME * game_framework.frame_time)
+                        % player.frame_num)
         if get_time() - player.start_time > 2:
             player.state_machine.handle_event(('TIME_OUT', 0))
 
 
     @staticmethod
     def draw(player): # player 그리기
-        player.image_110.clip_draw(player.frame * player.frame_len,
-                              player.action * player.action_len,
-                              player.frame_len, player.action_len, player.x, player.y)
+        sx = player.x - server.background.window_left
+        sy = player.y - server.background.window_bottom
+        player.image_110.clip_draw(int(player.frame) * player.frame_len,
+                                   player.action * player.action_len,
+                                   player.frame_len, player.action_len, sx, sy, 40, 66)
 
 
 class Move:
@@ -378,6 +397,7 @@ class Player:
 
     def draw(self):
         self.state_machine.draw()
+        draw_rectangle(*self.get_bb())
 
     def update(self):
         self.state_machine.update()
@@ -386,11 +406,6 @@ class Player:
 
     def handle_event(self, event):
         self.state_machine.handle_event(('INPUT', event))
-
-    def make_ball(self):
-        ball = Ball(self.x + 25, self.y + 10, 0, 1, 5)
-        game_world.add_collision_pair('player:ball', None, ball)
-        game_world.add_object(ball, 1)
 
     def get_bb(self):
         sx = self.x - server.background.window_left
