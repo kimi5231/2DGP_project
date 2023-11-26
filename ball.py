@@ -1,6 +1,7 @@
 from pico2d import load_image, get_time, draw_rectangle
 
 import game_framework
+import server
 
 # ball gravity speed
 PIXEL_PER_METER = (10.0 / 0.3) # 10 pixel 30 cm
@@ -15,7 +16,9 @@ class Ball:
         self.start_time = get_time()
 
     def draw(self):
-        self.image.draw(self.x, self.y, 22, 22)
+        sx = self.x - server.background.window_left
+        sy = self.y - server.background.window_bottom
+        self.image.draw(sx, sy, 22, 22)
         draw_rectangle(*self.get_bb())
 
     def update(self):

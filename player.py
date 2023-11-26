@@ -67,7 +67,7 @@ class OpenAttackHit:
 
     @staticmethod
     def exit(player, e):
-        server.ball.speed_x = SPIKE_SPEED_PPS
+        pass
 
     @staticmethod
     def do(player):
@@ -514,14 +514,17 @@ class Player:
         sy = self.y - server.background.window_bottom
 
         if self.state_machine.cur_state == Move:
-            return sx - 25, sy - 55, sx + 25, sy + 55
+            return sx - 16, sy - 33, sx + 16, sy + 33
         elif self.state_machine.cur_state == DriveServeHit:
-            return self.x + 5, self.y - 5, self.x + 25, self.y + 5
+            return sx + 5, sy - 5, sx + 15, sy + 5
         elif self.state_machine.cur_state == SpikeServeHit:
-            return self.x + 10, self.y + 100, self.x + 20, self.y + 120
+            return sx, sy + 70, sx + 10, sy + 80
+        elif self.state_machine.cur_state == OpenAttackHit:
+            return sx, sy + 70, sx + 10, sy + 80
         else:
             return 0, 0, 0, 0
 
     def handle_collision(self, group, other):
         if group == 'player:ball':
-            pass
+            if self.state_machine.cur_state == OpenAttackHit:
+                server.ball.speed_x = SPIKE_SPEED_PPS
