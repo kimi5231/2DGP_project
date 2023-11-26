@@ -248,6 +248,8 @@ class SpikeServeReady:
         player.frame_num = 10
         player.frame_len = 80
         player.action_len = 210
+        server.ball.speed_y = DRIVE_SPEED_PPS
+        server.ball.state = 'fly'
 
     @staticmethod
     def exit(player, e): # SpikeServeReady 상태에서 나올 때 할 것
@@ -257,7 +259,7 @@ class SpikeServeReady:
     def do(player): # SpikeServeReady 상태인 동안 할 것
         if int(player.frame) == 9:
             player.state_machine.handle_event(('TIME_OUT', 0))
-        player.frame = ((player.frame + player.frame_num * (ACTION_PER_TIME//1.5) * game_framework.frame_time)
+        player.frame = ((player.frame + player.frame_num * ACTION_PER_TIME * game_framework.frame_time)
                         % player.frame_num)
 
     @staticmethod
@@ -337,6 +339,8 @@ class DriveServeReady:
         player.frame_num = 4
         player.frame_len = 70
         player.action_len = 110
+        server.ball.speed_y = DRIVE_SPEED_PPS
+        server.ball.state = 'fly'
 
     @staticmethod
     def exit(player, e): # DriveServeReady 상태에서 나올 때 할 것
@@ -452,7 +456,7 @@ class Idle:
 class StateMachine:
     def __init__(self, player):
         self.player = player
-        self.cur_state = Idle
+        self.cur_state = ServeWait
         self.table = {
             Idle: {right_down: Move, right_up: Move, left_down: Move, left_up: Move, space_down: ServeWait, a_down: Receive, z_down:OpenAttackReady},
             Move: {right_down: Idle, right_up: Idle, left_down: Idle, left_up: Idle},
