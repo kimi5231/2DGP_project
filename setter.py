@@ -14,8 +14,8 @@ ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 
 
 class Setter:
-    def __init__(self, x, y):
-        self.x, self.y = x, y
+    def __init__(self, x, y, dir):
+        self.x, self.y, self.dir = x, y, dir
         self.frame = 0
         self.action = 0
         self.frame_num = 1
@@ -28,9 +28,14 @@ class Setter:
     def draw(self):
         sx = self.x - server.background.window_left
         sy = self.y - server.background.window_bottom
-        self.image.clip_draw(int(self.frame) * self.frame_len,
-                                   self.action * self.action_len,
-                                   self.frame_len, self.action_len, sx, sy, 33, 66)
+        if self.dir == 1:
+            self.image.clip_draw(int(self.frame) * self.frame_len,
+                                       self.action * self.action_len,
+                                        self.frame_len, self.action_len, sx, sy, 33, 66)
+        else:
+            self.image.clip_composite_draw(int(self.frame) * self.frame_len,
+                                           self.action * self.action_len,
+                                           self.frame_len, self.action_len, 0, 'h', sx, sy, 33, 66)
 
     def update(self):
         self.frame = ((self.frame + self.frame_num * ACTION_PER_TIME * game_framework.frame_time)

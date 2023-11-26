@@ -36,7 +36,7 @@ def init():
     game_world.add_object(server.player, 1)
     game_world.add_collision_pair('player:ball', server.player, None)
 
-    server.setter = Setter(485, 85)
+    server.setter = Setter(488, 85, 1)
     game_world.add_object(server.setter, 1)
     game_world.add_collision_pair('setter:ball', server.setter, None)
 
@@ -47,10 +47,10 @@ def init():
     game_world.add_collision_pair('blocker:ball', server.blocker1, None)
     game_world.add_collision_pair('blocker:ball', server.blocker2, None)
 
-    server.enemy_setter = Setter(515, 85)
+    server.enemy_setter = Setter(518, 85, -1)
     game_world.add_object(server.enemy_setter, 1)
 
-    server.ball = Ball(server.setter.x, server.setter.y + 10, 0, 1, 5)
+    server.ball = Ball(server.player.x, server.player.y + 10, 0, 1, 5)
     game_world.add_object(server.ball, 1)
     game_world.add_collision_pair('player:ball', None, server.ball)
     game_world.add_collision_pair('setter:ball', None, server.ball)
