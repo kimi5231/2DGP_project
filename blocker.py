@@ -25,16 +25,22 @@ class Blocker:
         self.frame_num = 1
         self.frame_len = 50
         self.action_len = 110
-        self.image = load_image('blocker.png')
+        self.image_110 = load_image('blocker_h110.png')
+        self.image_180 = load_image('blocker_h180.png')
         self.build_behavior_tree()
         self.state = 'Idle'
 
     def draw(self):
         sx = self.x - server.background.window_left
         sy = self.y - server.background.window_bottom
-        self.image.clip_draw(int(self.frame) * self.frame_len,
-                                   self.action * self.action_len,
-                                   self.frame_len, self.action_len, sx, sy, 33, 66)
+        if self.action_len == 110:
+            self.image_110.clip_draw(int(self.frame) * self.frame_len,
+                                       self.action * self.action_len,
+                                       self.frame_len, self.action_len, sx, sy, 33, 66)
+        else:
+            self.image_180.clip_draw(int(self.frame) * self.frame_len,
+                                     self.action * self.action_len,
+                                     self.frame_len, self.action_len, sx, sy+20, 36, 86)
 
     def update(self):
         self.frame = ((self.frame + self.frame_num * ACTION_PER_TIME * game_framework.frame_time)
@@ -111,7 +117,7 @@ class Blocker:
             return BehaviorTree.FAIL
 
     def blocking_hit(self):
-        self.action = 3
+        self.action = 0
         self.frame_num = 7
         self.frame_len = 60
         self.action_len = 180
