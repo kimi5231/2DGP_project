@@ -1,3 +1,166 @@
+from pico2d import load_image
+
+import game_framework
+import server
+from behavior_tree import BehaviorTree, Action, Condition, Sequence, Selector
+
+# spiker move speed
+PIXEL_PER_METER = (10.0 / 0.3) # 10 pixel 30 cm
+MOVE_SPEED_KMPH = 10.0 # Km / Hour
+MOVE_SPEED_MPM = (MOVE_SPEED_KMPH * 1000.0 / 60.0)
+MOVE_SPEED_MPS = (MOVE_SPEED_MPM / 60.0)
+MOVE_SPEED_PPS = (MOVE_SPEED_MPS * PIXEL_PER_METER)
+
+# spiker action speed
+TIME_PER_ACTION = 0.5
+ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+
+
 class Spiker:
     def __init__(self):
+        self.x = 200
+        self.y = 85
+        self.dir = 0
+        self.frame = 0
+        self.action = 0
+        self.frame_num = 1
+        self.frame_len = 50
+        self.action_len = 110
+        self.image_110 = load_image('player_h110.png')
+        self.image_210 = load_image('player_h210.png')
+        self.build_behavior_tree()
+        self.state = 'Idle'
+
+    def draw(self):
+        sx = self.x - server.background.window_left
+        sy = self.y - server.background.window_bottom
+        if self.action_len == 110:
+            self.image_110.clip_composite_draw(int(self.frame) * self.frame_len,
+                                               self.action * self.action_len,
+                                               self.frame_len, self.action_len, 0, 'h', sx, sy, 33, 66)
+        elif self.action_len == 210:
+            self.image_210.clip_composite_draw(int(self.frame) * self.frame_len,
+                                               self.action * self.action_len,
+                                               self.frame_len, self.action_len, 0, 'h', sx, sy + 20, 36, 86)
+
+    def update(self):
+        self.frame = ((self.frame + self.frame_num * ACTION_PER_TIME * game_framework.frame_time)
+                        % self.frame_num)
+        self.bt.run()
+
+    def get_bb(self):
+        sx = self.x - server.background.window_left
+        sy = self.y - server.background.window_bottom
+
+        return sx - 25, sy - 55, sx + 25, sy + 55
+
+    def handle_collision(self, group, other):
+        if group == 'spiker:ball':
+            self.action = 3
+            self.frame_num = 3
+            self.frame_len = 60
+            self.state = 'Idle'
+
+    def is_cur_state_Idle(self):
+        if self.state == 'Idle':
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    def Idle(self):
+        self.action = 0
+        self.frame_num = 1
+        self.frame_len = 50
+        return BehaviorTree.RUNNING
+
+    def distance_less_than(self, x1, y1, x2, y2, r):
+        distance2 = (x1 - x2) ** 2 + (y1 - y2) ** 2
+        return distance2 < (PIXEL_PER_METER * r) ** 2
+
+    def is_ball_nearby(self, distance):
+        if self.distance_less_than(server.ball.x, server.ball.y, self.x, self.y, distance):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    def chase_ball(self, r=0.5):
+        self.action = 1
+        self.frame_num = 5
+        self.frame_len = 50
+        self.action_len = 110
+        self.x += self.dir * MOVE_SPEED_PPS * game_framework.frame_time
+        if self.distance_less_than(server.background.net_x, server.background.net_y, self.x, self.y, r):
+            self.state = 'receive'
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
+
+    def is_cur_state_receive(self):
+        if self.state == 'receive':
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    def receive(self):
+        self.action = 6
+        self.frame_num = 5
+        self.frame_len = 70
+        self.action_len = 110
+        if int(self.frame) == 4:
+            self.state = 'move to net'
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
+
+    def is_move_to_net(self):
+        if self.state == 'move to net':
+            return BehaviorTree.FAIL
+        else:
+            return BehaviorTree.SUCCESS
+
+    def move_to_net(self, r=0.5):
+        self.action = 1
+        self.frame_num = 5
+        self.frame_len = 50
+        self.action_len = 110
+        self.x += self.dir * MOVE_SPEED_PPS * game_framework.frame_time
+        if self.distance_less_than(server.background.net_x, server.background.net_y, self.x, self.y, r):
+            self.state = 'Idle'
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
+
+    def is_setter_toss(self):
         pass
+
+    def spike(self):
+        pass
+
+    def build_behavior_tree(self):
+        c1 = Condition('현재 상태가 Idle 인가?', self.is_cur_state_Idle)
+        a1 = Action('Idle', self.Idle)
+
+        SEQ_keep_Idle_state = Sequence('Idle 상태 유지', c1, a1)
+
+        c2 = Condition('공이 근처에 있는가?', self.is_ball_nearby, 7)
+        a2 = Action('chase ball', self.chase_ball)
+
+        SEQ_chase_ball = Sequence('chase ball 상태로 변경', c2, a2)
+
+        c3 = Condition('현재 상태가 receive 인가?', self.is_cur_state_receive)
+        a3 = Action('receive', self.receive)
+
+        SEQ_keep_receive_state = Sequence('receive 상태 유지', c3, a3)
+
+        c4 = Condition('네트 앞으로 가야 하는가?', self.is_move_to_net)
+        a4 = Action('move to net', self.move_to_net)
+
+        SEQ_move_to_net_front = Sequence('네트 앞으로 이동', c4, a4)
+
+        root = SEL__move_to_net_receive_or_chase_ball_or_Idle = Selector('move to net or receive or chase ball or Idle',
+                                                    SEQ_move_to_net_front,
+                                                            SEQ_keep_receive_state,
+                                                            SEQ_chase_ball,
+                                                            SEQ_keep_Idle_state)
+
+        self.bt = BehaviorTree(root)

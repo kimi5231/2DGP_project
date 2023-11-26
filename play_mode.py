@@ -10,6 +10,7 @@ from enemy_blocker import Enemy_Blocker
 from player import Player
 from score import Score
 from setter import Setter
+from spiker import Spiker
 from timer import Timer
 
 
@@ -34,7 +35,7 @@ def init():
     game_world.add_object(server.background, 0)
 
     server.player = Player()
-    game_world.add_object(server.player, 1)
+    game_world.add_object(server.player, 2)
     game_world.add_collision_pair('player:ball', server.player, None)
 
     server.setter = Setter(488, 85, 1)
@@ -48,6 +49,10 @@ def init():
     game_world.add_collision_pair('blocker:ball', server.blocker1, None)
     game_world.add_collision_pair('blocker:ball', server.blocker2, None)
 
+    server.spiker = Spiker()
+    game_world.add_object(server.spiker, 2)
+    game_world.add_collision_pair('spiker:ball', server.spiker, None)
+
     server.enemy_setter = Setter(518, 85, -1)
     game_world.add_object(server.enemy_setter, 1)
     game_world.add_collision_pair('setter:ball', server.enemy_setter, None)
@@ -59,7 +64,7 @@ def init():
     game_world.add_collision_pair('enemy_blocker:ball', server.enemy_blocker1, None)
     game_world.add_collision_pair('enemy_blocker:ball', server.enemy_blocker2, None)
 
-    server.ball = Ball(server.player.x, server.player.y + 10, 0, 0, 0)
+    server.ball = Ball(server.spiker.x, server.spiker.y, 0, 0, 0)
     game_world.add_object(server.ball, 1)
     game_world.add_collision_pair('player:ball', None, server.ball)
     game_world.add_collision_pair('setter:ball', None, server.ball)
