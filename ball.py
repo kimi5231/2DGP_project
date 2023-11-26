@@ -12,8 +12,8 @@ Gravity_SPEED_PPS = (Gravity_SPEED_MPS * PIXEL_PER_METER)
 
 
 class Ball:
-    def __init__(self, x, y, dir, speed):
-        self.x, self.y, self.dir, self.speed = x, y, dir, speed
+    def __init__(self, x, y, dir, speed_x, speed_y):
+        self.x, self.y, self.dir, self.speed_x, self.speed_y = x, y, dir, speed_x, speed_y
         self.image = load_image('ball.png')
 
     def draw(self):
@@ -28,4 +28,12 @@ class Ball:
 
     def handle_collision(self, group, other):
         if group == 'player:ball':
-            pass
+            self.dir = 1
+        elif group == 'setter:ball':
+            self.dir = 0
+        elif group == 'blocker:ball':
+            self.dir = 1
+        elif group == 'spiker:ball':
+            self.dir = -1
+        elif group == 'enemy_blocker:ball':
+            self.dir = -1
