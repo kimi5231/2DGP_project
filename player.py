@@ -13,11 +13,17 @@ MOVE_SPEED_MPM = (MOVE_SPEED_KMPH * 1000.0 / 60.0)
 MOVE_SPEED_MPS = (MOVE_SPEED_MPM / 60.0)
 MOVE_SPEED_PPS = (MOVE_SPEED_MPS * PIXEL_PER_METER)
 
-# player move speed
+# player spike speed
 SPIKE_SPEED_KMPH = 105.0 # Km / Hour
 SPIKE_SPEED_MPM = (SPIKE_SPEED_KMPH * 1000.0 / 60.0)
 SPIKE_SPEED_MPS = (SPIKE_SPEED_MPM / 60.0)
 SPIKE_SPEED_PPS = (SPIKE_SPEED_MPS * PIXEL_PER_METER)
+
+# player drive speed
+DRIVE_SPEED_KMPH = 50.0 # Km / Hour
+DRIVE_SPEED_MPM = (DRIVE_SPEED_KMPH * 1000.0 / 60.0)
+DRIVE_SPEED_MPS = (DRIVE_SPEED_MPM / 60.0)
+DRIVE_SPEED_PPS = (DRIVE_SPEED_MPS * PIXEL_PER_METER)
 
 # player action speed
 TIME_PER_ACTION = 0.5
@@ -526,5 +532,11 @@ class Player:
 
     def handle_collision(self, group, other):
         if group == 'player:ball':
-            if self.state_machine.cur_state == OpenAttackHit:
+            if self.state_machine.cur_state == DriveServeHit:
+                server.ball.speed_x = DRIVE_SPEED_PPS
+                server.ball.speed_y = DRIVE_SPEED_PPS
+            elif self.state_machine.cur_state == SpikeServeHit:
+                server.ball.speed_x = SPIKE_SPEED_PPS
+                server.ball.speed_y = DRIVE_SPEED_PPS
+            elif self.state_machine.cur_state == OpenAttackHit:
                 server.ball.speed_x = SPIKE_SPEED_PPS

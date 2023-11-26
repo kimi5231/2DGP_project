@@ -12,6 +12,7 @@ Gravity_SPEED_PPS = (Gravity_SPEED_MPS * PIXEL_PER_METER)
 class Ball:
     def __init__(self, x, y, dir, speed_x, speed_y):
         self.x, self.y, self.dir, self.speed_x, self.speed_y = x, y, dir, speed_x, speed_y
+        self.state = 'fly'
         self.image = load_image('ball.png')
         self.start_time = get_time()
 
@@ -24,7 +25,7 @@ class Ball:
     def update(self):
         self.x += self.dir * self.speed_x * game_framework.frame_time
         self.y += self.speed_y * game_framework.frame_time
-        if get_time() - self.start_time > 1:
+        if get_time() - self.start_time > 1 and self.state == 'fly':
             self.start_time = get_time()
             self.speed_y -= Gravity_SPEED_PPS
 
