@@ -1,4 +1,5 @@
 from pico2d import load_image
+from sdl2 import SDL_KEYDOWN, SDLK_s
 
 import game_framework
 import server
@@ -40,6 +41,10 @@ class Blocker:
                         % self.frame_num)
         self.bt.run()
 
+    def handle_event(self, event):
+        if event.type == SDL_KEYDOWN and event.key == SDLK_s:
+            self.state = 'blocking hit'
+
     def get_bb(self):
         sx = self.x - server.background.window_left
         sy = self.y - server.background.window_bottom
@@ -77,7 +82,7 @@ class Blocker:
     def blocking_ready(self):
         self.action = 1
         self.frame_num = 2
-        self.frame_len = 60
+        self.frame_len = 50
         self.action_len = 110
         self.state = 'blocking ready'
         if int(self.frame) == 1:
@@ -95,9 +100,26 @@ class Blocker:
     def blocking_wait(self):
         self.action = 2
         self.frame_num = 1
-        self.frame_len = 60
+        self.frame_len = 50
         self.action_len = 110
         return BehaviorTree.RUNNING
+
+    def is_cur_state_blocking_hit(self):
+        if self.state == 'blocking hit':
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    def blocking_hit(self):
+        self.action = 3
+        self.frame_num = 7
+        self.frame_len = 60
+        self.action_len = 180
+        if int(self.frame) == 6:
+            self.state = 'Idle'
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
 
     def build_behavior_tree(self):
         c1 = Condition('현재 상태가 Idle 인가?', self.is_cur_state_Idle)
@@ -115,9 +137,16 @@ class Blocker:
 
         SEQ_keep_blocking_wait_state = Sequence('blocking wait 상태 유지', c3, a3)
 
-        root = SEL_blocking_wait_or_blocking_ready_or_Idle = Selector('toss wait or toss ready or Idle',
-                                                              SEQ_keep_blocking_wait_state,
-                                                              SEQ_change_blocking_ready_state,
-                                                              SEQ_keep_Idle_state)
+        c4 = Condition('현재 상태가 blocking hit 인가?', self.is_cur_state_blocking_hit)
+        a4 = Action('blocking hit', self.blocking_hit)
+
+        SEQ_keep_blocking_hit_state = Sequence('blocking hit 상태 유지', c4, a4)
+
+        root = SEL_blocking_hit_or_blocking_wait_or_blocking_ready_or_Idle = Selector(
+            'blocking hit or blocking wait or blocking ready or Idle',
+                    SEQ_keep_blocking_hit_state,
+                    SEQ_keep_blocking_wait_state,
+                    SEQ_change_blocking_ready_state,
+                    SEQ_keep_Idle_state)
 
         self.bt = BehaviorTree(root)
