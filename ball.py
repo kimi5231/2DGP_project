@@ -1,4 +1,4 @@
-from pico2d import load_image, get_time, draw_rectangle
+from pico2d import load_image, get_time, draw_rectangle, clamp
 
 import game_framework
 import server
@@ -28,9 +28,13 @@ class Ball:
         if get_time() - self.start_time > 1 and self.state == 'fly':
             self.start_time = get_time()
             self.speed_y -= Gravity_SPEED_PPS
+        self.x = clamp(30, self.x, server.background.w - 40)
+        self.y = clamp(30, self.y, server.background.h - 40)
 
     def get_bb(self):
-        return self.x - 11, self.y - 11, self.x + 11, self.y + 11
+        sx = self.x - server.background.window_left
+        sy = self.y - server.background.window_bottom
+        return sx- 11, sy - 11, sx + 11, sy + 11
 
     def handle_collision(self, group, other):
         if group == 'player:ball':

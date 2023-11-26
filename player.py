@@ -509,8 +509,6 @@ class Player:
 
     def update(self):
         self.state_machine.update()
-        self.x = clamp(30, self.x, server.background.w - 40)
-        self.y = clamp(30, self.y, server.background.h - 40)
 
     def handle_event(self, event):
         self.state_machine.handle_event(('INPUT', event))

@@ -26,8 +26,8 @@ class Background:
         self.net_image.clip_draw(0, 0, 10, 81, net_sx, net_sy)
 
     def update(self):
-        self.window_left = int(server.player.x) - self.cw // 2
-        self.window_bottom = int(server.player.y) - self.ch // 2
+        self.window_left = int(server.ball.x) - self.cw // 2
+        self.window_bottom = int(server.ball.y) - self.ch // 2
 
         self.window_left = clamp(0, self.window_left, self.w - self.cw - 1)
         self.window_bottom = clamp(0, self.window_bottom, self.h - self.ch - 1)
