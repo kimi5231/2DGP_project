@@ -8,7 +8,7 @@ from behavior_tree import BehaviorTree, Action, Condition, Sequence, Selector
 
 # setter toss speed
 PIXEL_PER_METER = (10.0 / 0.3) # 10 pixel 30 cm
-TOSS_SPEED_KMPH = 30.0 # Km / Hour
+TOSS_SPEED_KMPH = 10.0 # Km / Hour
 TOSS_SPEED_MPM = (TOSS_SPEED_KMPH * 1000.0 / 60.0)
 TOSS_SPEED_MPS = (TOSS_SPEED_MPM / 60.0)
 TOSS_SPEED_PPS = (TOSS_SPEED_MPS * PIXEL_PER_METER)
@@ -60,6 +60,8 @@ class Setter:
             self.frame_len = 60
             self.state = 'Idle'
             server.ball.speed_y = TOSS_SPEED_PPS
+            server.ball.speed_x = 0
+            server.ball.dir = 0
 
     def is_cur_state_Idle(self):
         if self.state == 'Idle':
