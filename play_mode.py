@@ -58,7 +58,7 @@ def init():
     game_world.add_object(server.player, 2)
     game_world.add_collision_pair('player:ball', server.player, None)
 
-    server.setter = Setter(488, 85, 1)
+    server.setter = Setter(488, 85, 1, 'player')
     game_world.add_object(server.setter, 1)
     game_world.add_collision_pair('setter:ball', server.setter, None)
 
@@ -73,7 +73,7 @@ def init():
     game_world.add_object(server.spiker, 2)
     game_world.add_collision_pair('spiker:ball', server.spiker, None)
 
-    server.enemy_setter = Setter(518, 85, -1)
+    server.enemy_setter = Setter(518, 85, -1, 'ai')
     game_world.add_object(server.enemy_setter, 1)
     game_world.add_collision_pair('setter:ball', server.enemy_setter, None)
 

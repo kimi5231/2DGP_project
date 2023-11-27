@@ -30,7 +30,7 @@ ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 
 class Spiker:
     def __init__(self):
-        self.x = 900
+        self.x = 700
         self.y = 85
         self.frame = 0
         self.action = 0
@@ -135,17 +135,82 @@ class Spiker:
         self.frame_len = 50
         self.action_len = 110
         self.x += -1 * MOVE_SPEED_PPS * game_framework.frame_time
-        if self.distance_less_than(server.background.net_x, server.background.net_y, self.x, self.y, r):
+        if self.distance_less_than(server.background.net_x, server.background.net_y, self.x, self.y, 0.5):
             self.state = 'Idle'
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.RUNNING
 
-    def is_setter_toss(self):
-        pass
+    def is_cur_state_wait_setter_toss(self):
+        if self.state == 'wait setter toss':
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
 
     def spike(self):
         pass
+
+    def is_cur_state_serve_ready(self):
+        if self.state == 'serve ready':
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    def serve_ready(self):
+        self.action = 2
+        self.frame_num = 1
+        self.frame_len = 70
+        self.action_len = 110
+        return BehaviorTree.RUNNING
+
+    def is_cur_state_drive_serve_ready(self):
+        if self.state == 'drive serve ready':
+            server.ball.speed_y = DRIVE_SPEED_PPS
+            server.ball.state = 'fly'
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    def drive_serve_ready(self):
+        self.action = 3
+        self.frame_num = 4
+        self.frame_len = 70
+        self.action_len = 110
+        if int(self.frame) == 3:
+            self.state = 'drive_serve_wait'
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
+
+    def is_cur_state_drive_serve_wait(self):
+        if self.state == 'drive serve wait':
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    def drive_serve_wait(self):
+        self.action = 4
+        self.frame_num = 1
+        self.frame_len = 70
+        self.action_len = 110
+        return BehaviorTree.RUNNING
+
+    def is_cur_state_drive_serve_hit(self):
+        if self.state == 'drive serve hit':
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    def drive_serve_hit(self):
+        self.action = 5
+        self.frame_num = 3
+        self.frame_len = 70
+        self.action_len = 110
+        if int(self.frame) == 2:
+            self.state = 'Idle'
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
 
     def build_behavior_tree(self):
         c1 = Condition('현재 상태가 Idle 인가?', self.is_cur_state_Idle)
@@ -168,8 +233,32 @@ class Spiker:
 
         SEQ_move_to_net_front = Sequence('네트 앞으로 이동', c4, a4)
 
+        c5 = Condition('현재 상태가 drive serve ready 인가?', self.is_cur_state_drive_serve_ready)
+        a5 = Action('drive serve ready', self.drive_serve_ready)
+
+        SEQ_drive_serve_ready = Sequence('drive serve ready', c5, a5)
+
+        c6 = Condition('현재 상태가 drive serve wait 인가?', self.is_cur_state_drive_serve_wait)
+        a6 = Action('drive serve wait', self.drive_serve_wait)
+
+        SEQ_drive_serve_wait = Sequence('drive serve wait', c6, a6)
+
+        c7 = Condition('현재 상태가 drive serve hit 인가?', self.is_cur_state_drive_serve_hit)
+        a7 = Action('drive serve hit', self.drive_serve_hit)
+
+        SEQ_drive_serve_hit = Sequence('drive serve hit', c6, a6)
+
+        c8 = Condition('현재 상태가 serve ready 인가?', self.is_cur_state_serve_ready)
+        a8 = Action('serve ready', self.serve_ready)
+
+        SEQ_serve_ready = Sequence('serve ready', c8, a8)
+
         root = SEL__move_to_net_receive_or_chase_ball_or_Idle = Selector('move to net or receive or chase ball or Idle',
-                                                    SEQ_move_to_net_front,
+                                                            SEQ_serve_ready,
+                                                            SEQ_drive_serve_hit,
+                                                            SEQ_drive_serve_wait,
+                                                            SEQ_drive_serve_ready,
+                                                            SEQ_move_to_net_front,
                                                             SEQ_keep_receive_state,
                                                             SEQ_chase_ball,
                                                             SEQ_keep_Idle_state)

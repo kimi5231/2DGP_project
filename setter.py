@@ -6,7 +6,12 @@ import play_mode
 import server
 from behavior_tree import BehaviorTree, Action, Condition, Sequence, Selector
 
+# setter toss speed
 PIXEL_PER_METER = (10.0 / 0.3) # 10 pixel 30 cm
+TOSS_SPEED_KMPH = 30.0 # Km / Hour
+TOSS_SPEED_MPM = (TOSS_SPEED_KMPH * 1000.0 / 60.0)
+TOSS_SPEED_MPS = (TOSS_SPEED_MPM / 60.0)
+TOSS_SPEED_PPS = (TOSS_SPEED_MPS * PIXEL_PER_METER)
 
 # setter action speed
 TIME_PER_ACTION = 0.5
@@ -14,8 +19,8 @@ ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 
 
 class Setter:
-    def __init__(self, x, y, dir):
-        self.x, self.y, self.dir = x, y, dir
+    def __init__(self, x, y, dir, team):
+        self.x, self.y, self.dir, self.team = x, y, dir, team
         self.frame = 0
         self.action = 0
         self.frame_num = 1
@@ -54,6 +59,7 @@ class Setter:
             self.frame_num = 3
             self.frame_len = 60
             self.state = 'Idle'
+            server.ball.speed_y = TOSS_SPEED_PPS
 
     def is_cur_state_Idle(self):
         if self.state == 'Idle':
@@ -72,8 +78,8 @@ class Setter:
         return distance2 < (PIXEL_PER_METER * r) ** 2
 
     def is_ball_nearby(self, distance):
-        if self.distance_less_than(server.ball.x, server.ball.y, self.x, self.y, distance)\
-                and server.ball.y > self.y:
+        if (self.distance_less_than(server.ball.x, server.ball.y, self.x, self.y, distance)
+                and server.ball.y > self.y and server.score.turn == self.team):
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL

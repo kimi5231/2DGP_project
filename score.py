@@ -5,8 +5,8 @@ import server
 
 class Score:
     def __init__(self):
-        self.player_score = 0
-        self.ai_score = 0
+        self.player_score = 11
+        self.ai_score = 11
         self.turn = 'player'
         self.font = load_font('ENCR10B.TTF', 30)
 

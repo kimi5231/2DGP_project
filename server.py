@@ -23,5 +23,38 @@ timer = None
 score = None
 judge = None
 
-
 stage = 1
+
+
+def init_to_player_turn():
+    score.turn = 'player'
+    player.x = 100
+    setter.x = 488
+    blocker1.x = 470
+    blocker2.x = 455
+
+    spiker.state = 'Idle'
+    spiker.x = 700
+    enemy_setter.x = 518
+    enemy_blocker1.x = 536
+    enemy_blocker2.x = 551
+
+    ball.x = player.x + 10
+    ball.y = player.y + 10
+
+
+def init_to_ai_turn():
+    score.turn = 'ai'
+    player.x = 300
+    setter.x = 488
+    blocker1.x = 470
+    blocker2.x = 455
+
+    spiker.state = 'serve ready'
+    spiker.x = 900
+    enemy_setter.x = 518
+    enemy_blocker1.x = 536
+    enemy_blocker2.x = 551
+
+    ball.x = spiker.x - 10
+    ball.y = spiker.y + 10

@@ -31,6 +31,7 @@ class Background:
         self.window_left = clamp(0, self.window_left, self.w - self.cw - 1)
         self.window_bottom = clamp(0, self.window_bottom, self.h - self.ch - 1)
 
+
 class Player_Court:
     def __init__(self):
         self.x, self.y = 500, 51
@@ -49,9 +50,7 @@ class Player_Court:
     def handle_collision(self, group, other):
         if group == 'player_court:ball':
             server.score.ai_score += 1
-            server.turn = 'ai'
-            server.ball.x = server.spiker.x - 10
-            server.ball.y = server.spiker.y + 10
+            server.init_to_ai_turn()
 
 
 class AI_Court:
@@ -72,9 +71,7 @@ class AI_Court:
     def handle_collision(self, group, other):
         if group == 'ai_court:ball':
             server.score.player_score += 1
-            server.turn = 'player'
-            server.ball.x = server.player.x + 10
-            server.ball.y = server.player.y + 10
+            server.init_to_player_turn()
 
 
 class Player_Court_Out:
@@ -95,9 +92,7 @@ class Player_Court_Out:
     def handle_collision(self, group, other):
         if group == 'player_court_out:ball':
             server.score.player_score += 1
-            server.turn = 'player'
-            server.ball.x = server.player.x + 10
-            server.ball.y = server.player.y + 10
+            server.init_to_player_turn()
 
 
 class AI_Court_Out:
@@ -118,9 +113,7 @@ class AI_Court_Out:
     def handle_collision(self, group, other):
         if group == 'ai_court_out:ball':
             server.score.ai_score += 1
-            server.turn = 'ai'
-            server.ball.x = server.spiker.x - 10
-            server.ball.y = server.spiker.y + 10
+            server.init_to_ai_turn()
 
 
 class Net:
