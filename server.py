@@ -1,3 +1,5 @@
+from player import ServeWait, Idle
+
 background = None
 player_court = None
 ai_court = None
@@ -28,6 +30,7 @@ stage = 1
 
 def init_to_player_turn():
     score.turn = 'player'
+    player.cur_state = ServeWait
     player.x = 100
     setter.x = 488
     blocker1.x = 470
@@ -50,6 +53,7 @@ def init_to_player_turn():
 
 def init_to_ai_turn():
     score.turn = 'ai'
+    player.cur_state = Idle
     player.x = 300
     setter.x = 488
     blocker1.x = 470
