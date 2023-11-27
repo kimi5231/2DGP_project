@@ -90,10 +90,12 @@ class Player_Court_Out:
         return sx - 500, sy - 5, sx - 300, sy + 5
 
     def handle_collision(self, group, other):
-        if group == 'player_court_out:ball':
+        if group == 'player_court_out:ball' and server.score.turn == 'ai':
             server.score.player_score += 1
             server.init_to_player_turn()
-
+        elif group == 'player_court_out:ball' and server.score.turn == 'player':
+            server.score.ai_score += 1
+            server.init_to_ai_turn()
 
 class AI_Court_Out:
     def __init__(self):
@@ -111,9 +113,12 @@ class AI_Court_Out:
         return sx + 300, sy - 5, sx + 500, sy + 5
 
     def handle_collision(self, group, other):
-        if group == 'ai_court_out:ball':
+        if group == 'ai_court_out:ball' and server.score.turn == 'player':
             server.score.ai_score += 1
             server.init_to_ai_turn()
+        elif group == 'ai_court_out:ball' and server.score.turn == 'ai':
+            server.score.player_score += 1
+            server.init_to_player_turn()
 
 
 class Net:
