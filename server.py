@@ -1,4 +1,9 @@
 background = None
+player_court = None
+ai_court = None
+player_court_out = None
+ai_court_out = None
+net = None
 
 # plyer team
 player = None

@@ -1,4 +1,4 @@
-from pico2d import load_image, get_canvas_width, get_canvas_height, clamp
+from pico2d import load_image, get_canvas_width, get_canvas_height, clamp, draw_rectangle
 
 import server
 
@@ -14,7 +14,6 @@ class Background:
         self.h = self.image.h
         self.court_x, self.court_y = 500, 51
         self.net_x, self.net_y = 500, 97
-
     def draw(self):
         court_sx = self.court_x - server.background.window_left
         court_sy = self.court_y - server.background.window_bottom
@@ -31,3 +30,102 @@ class Background:
 
         self.window_left = clamp(0, self.window_left, self.w - self.cw - 1)
         self.window_bottom = clamp(0, self.window_bottom, self.h - self.ch - 1)
+
+class Player_Court:
+    def __init__(self):
+        self.x, self.y = 500, 51
+
+    def draw(self):
+        draw_rectangle(*self.get_bb())
+
+    def update(self):
+        pass
+
+    def get_bb(self):
+        sx = self.x - server.background.window_left
+        sy = self.y - server.background.window_bottom
+        return sx - 300, sy - 5, sx, sy + 5
+
+    def handle_collision(self, group, other):
+        if group == 'player_court:ball':
+            server.score.ai_score += 1
+
+
+class AI_Court:
+    def __init__(self):
+        self.x, self.y = 500, 51
+
+    def draw(self):
+        draw_rectangle(*self.get_bb())
+
+    def update(self):
+        pass
+
+    def get_bb(self):
+        sx = self.x - server.background.window_left
+        sy = self.y - server.background.window_bottom
+        return sx, sy - 5, sx + 300, sy + 5
+
+    def handle_collision(self, group, other):
+        if group == 'ai_court:ball':
+            server.score.player_score += 1
+
+
+class Player_Court_Out:
+    def __init__(self):
+        self.x, self.y = 500, 51
+
+    def draw(self):
+        draw_rectangle(*self.get_bb())
+
+    def update(self):
+        pass
+
+    def get_bb(self):
+        sx = self.x - server.background.window_left
+        sy = self.y - server.background.window_bottom
+        return sx - 500, sy - 5, sx - 300, sy + 5
+
+    def handle_collision(self, group, other):
+        if group == 'player_court_out:ball':
+            server.score.player_score += 1
+
+
+class AI_Court_Out:
+    def __init__(self):
+        self.x, self.y = 500, 51
+
+    def draw(self):
+        draw_rectangle(*self.get_bb())
+
+    def update(self):
+        pass
+
+    def get_bb(self):
+        sx = self.x - server.background.window_left
+        sy = self.y - server.background.window_bottom
+        return sx + 300, sy - 5, sx + 500, sy + 5
+
+    def handle_collision(self, group, other):
+        if group == 'ai_court_out:ball':
+            server.score.ai_score += 1
+
+
+class Net:
+    def __init__(self):
+        self.x, self.y = 500, 97
+
+    def draw(self):
+        draw_rectangle(*self.get_bb())
+
+    def update(self):
+        pass
+
+    def get_bb(self):
+        sx = self.x - server.background.window_left
+        sy = self.y - server.background.window_bottom
+        return sx - 3, sy - 40, sx + 7, sy + 40
+
+    def handle_collision(self, group, other):
+        if group == 'net:ball':
+            pass
