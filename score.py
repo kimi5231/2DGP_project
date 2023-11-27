@@ -14,13 +14,7 @@ class Score:
         self.font.draw(260, 550, f'{self.player_score} : {self.ai_score}', (255, 255, 255))
 
     def update(self):
-        self.end_set()
-
-    def update_score(self):
-        if self.turn == 'player':
-            self.player_score += 1
-        elif self.turn == 'ai':
-            self.ai_score += 1
+        pass
 
     def end_set(self):
         if self.player_score >= 15 and self.player_score - self.ai_score >= 2:
