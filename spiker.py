@@ -71,6 +71,7 @@ class Spiker:
                 self.state = 'receive'
                 server.ball.speed_x = RECEIVE_SPEED_PPS
                 server.ball.speed_y = DRIVE_SPEED_PPS
+                server.score.turn = 'ai'
             elif self.state == 'drive serve wait':
                 self.state = 'drive serve hit'
                 server.ball.speed_x = DRIVE_SPEED_PPS

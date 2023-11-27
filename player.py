@@ -157,6 +157,7 @@ class Receive:
         player.frame_num = 5
         player.frame_len = 70
         player.action_len = 110
+        server.score.turn = 'player'
 
     @staticmethod
     def exit(player, e): # Receive 상태에서 나올 때 할 것
