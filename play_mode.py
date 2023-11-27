@@ -7,6 +7,7 @@ from ball import Ball
 from background import Background, Player_Court, AI_Court, Player_Court_Out, AI_Court_Out, Net
 from blocker import Blocker
 from enemy_blocker import Enemy_Blocker
+from judge import Judge
 from player import Player
 from score import Score
 from setter import Setter
@@ -99,11 +100,13 @@ def init():
     game_world.add_collision_pair('net:ball', None, server.ball)
 
     server.timer = Timer()
-    game_world.add_object(server.timer, 1)
+    game_world.add_object(server.timer, 3)
 
     server.score = Score()
-    game_world.add_object(server.score, 1)
+    game_world.add_object(server.score, 3)
 
+    server.judge = Judge()
+    game_world.add_object(server.judge, 3)
 
 def finish():
     game_world.clear()
