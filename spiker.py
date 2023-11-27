@@ -1,4 +1,4 @@
-from pico2d import load_image
+from pico2d import load_image, draw_rectangle
 
 import game_framework
 import server
@@ -11,6 +11,18 @@ MOVE_SPEED_MPM = (MOVE_SPEED_KMPH * 1000.0 / 60.0)
 MOVE_SPEED_MPS = (MOVE_SPEED_MPM / 60.0)
 MOVE_SPEED_PPS = (MOVE_SPEED_MPS * PIXEL_PER_METER)
 
+# player drive speed
+DRIVE_SPEED_KMPH = 50.0 # Km / Hour
+DRIVE_SPEED_MPM = (DRIVE_SPEED_KMPH * 1000.0 / 60.0)
+DRIVE_SPEED_MPS = (DRIVE_SPEED_MPM / 60.0)
+DRIVE_SPEED_PPS = (DRIVE_SPEED_MPS * PIXEL_PER_METER)
+
+# spiker receive speed
+RECEIVE_SPEED_KMPH = 10.0 # Km / Hour
+RECEIVE_SPEED_MPM = (MOVE_SPEED_KMPH * 1000.0 / 60.0)
+RECEIVE_SPEED_MPS = (MOVE_SPEED_MPM / 60.0)
+RECEIVE_SPEED_PPS = (MOVE_SPEED_MPS * PIXEL_PER_METER)
+
 # spiker action speed
 TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
@@ -18,9 +30,8 @@ ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 
 class Spiker:
     def __init__(self):
-        self.x = 200
+        self.x = 900
         self.y = 85
-        self.dir = 0
         self.frame = 0
         self.action = 0
         self.frame_num = 1
@@ -42,6 +53,7 @@ class Spiker:
             self.image_210.clip_composite_draw(int(self.frame) * self.frame_len,
                                                self.action * self.action_len,
                                                self.frame_len, self.action_len, 0, 'h', sx, sy + 20, 36, 86)
+        draw_rectangle(*self.get_bb())
 
     def update(self):
         self.frame = ((self.frame + self.frame_num * ACTION_PER_TIME * game_framework.frame_time)
@@ -51,15 +63,14 @@ class Spiker:
     def get_bb(self):
         sx = self.x - server.background.window_left
         sy = self.y - server.background.window_bottom
-
-        return sx - 25, sy - 55, sx + 25, sy + 55
+        return sx - 16, sy - 33, sx + 16, sy + 33
 
     def handle_collision(self, group, other):
         if group == 'spiker:ball':
-            self.action = 3
-            self.frame_num = 3
-            self.frame_len = 60
-            self.state = 'Idle'
+            if self.state == 'chase':
+                self.state = 'receive'
+                server.ball.speed_x = RECEIVE_SPEED_PPS
+                server.ball.speed_y = DRIVE_SPEED_PPS
 
     def is_cur_state_Idle(self):
         if self.state == 'Idle':
@@ -88,12 +99,12 @@ class Spiker:
         self.frame_num = 5
         self.frame_len = 50
         self.action_len = 110
-        self.x += self.dir * MOVE_SPEED_PPS * game_framework.frame_time
-        if self.distance_less_than(server.background.net_x, server.background.net_y, self.x, self.y, r):
-            self.state = 'receive'
-            return BehaviorTree.SUCCESS
+        self.state = 'chase'
+        if server.ball.x < self.x:
+            self.x += -1 * MOVE_SPEED_PPS * game_framework.frame_time
         else:
-            return BehaviorTree.RUNNING
+            self.x += 1 * MOVE_SPEED_PPS * game_framework.frame_time
+        return BehaviorTree.RUNNING
 
     def is_cur_state_receive(self):
         if self.state == 'receive':
@@ -114,16 +125,16 @@ class Spiker:
 
     def is_move_to_net(self):
         if self.state == 'move to net':
-            return BehaviorTree.FAIL
-        else:
             return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
 
     def move_to_net(self, r=0.5):
         self.action = 1
         self.frame_num = 5
         self.frame_len = 50
         self.action_len = 110
-        self.x += self.dir * MOVE_SPEED_PPS * game_framework.frame_time
+        self.x += -1 * MOVE_SPEED_PPS * game_framework.frame_time
         if self.distance_less_than(server.background.net_x, server.background.net_y, self.x, self.y, r):
             self.state = 'Idle'
             return BehaviorTree.SUCCESS
@@ -142,7 +153,7 @@ class Spiker:
 
         SEQ_keep_Idle_state = Sequence('Idle 상태 유지', c1, a1)
 
-        c2 = Condition('공이 근처에 있는가?', self.is_ball_nearby, 7)
+        c2 = Condition('공이 근처에 있는가?', self.is_ball_nearby, 10)
         a2 = Action('chase ball', self.chase_ball)
 
         SEQ_chase_ball = Sequence('chase ball 상태로 변경', c2, a2)

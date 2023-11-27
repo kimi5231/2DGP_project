@@ -2,9 +2,7 @@ from pico2d import load_image, get_time, delay, draw_rectangle, clamp
 from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_SPACE, SDLK_a, SDLK_z
 
 import game_framework
-import game_world
 import server
-from ball import Ball
 
 # player move speed
 PIXEL_PER_METER = (10.0 / 0.3) # 10 pixel 30 cm
