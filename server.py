@@ -42,6 +42,11 @@ def init_to_player_turn():
     ball.x = player.x + 10
     ball.y = player.y + 10
 
+    judge.team = 'player'
+    judge.state = 'draw'
+    judge.frame = 0
+    judge.action = 0
+
 
 def init_to_ai_turn():
     score.turn = 'ai'
@@ -58,3 +63,8 @@ def init_to_ai_turn():
 
     ball.x = spiker.x - 10
     ball.y = spiker.y + 10
+
+    judge.team = 'ai'
+    judge.state = 'draw'
+    judge.frame = 0
+    judge.action = 0

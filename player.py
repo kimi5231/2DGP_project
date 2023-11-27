@@ -379,7 +379,6 @@ class ServeWait:
         player.frame = ((player.frame + player.frame_num * ACTION_PER_TIME * game_framework.frame_time)
                         % player.frame_num)
         if get_time() - player.start_time > 3:
-            
             player.state_machine.handle_event(('TIME_OUT', 0))
 
 

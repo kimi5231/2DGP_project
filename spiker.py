@@ -11,7 +11,7 @@ MOVE_SPEED_MPM = (MOVE_SPEED_KMPH * 1000.0 / 60.0)
 MOVE_SPEED_MPS = (MOVE_SPEED_MPM / 60.0)
 MOVE_SPEED_PPS = (MOVE_SPEED_MPS * PIXEL_PER_METER)
 
-# player drive speed
+# spiker drive speed
 DRIVE_SPEED_KMPH = 50.0 # Km / Hour
 DRIVE_SPEED_MPM = (DRIVE_SPEED_KMPH * 1000.0 / 60.0)
 DRIVE_SPEED_MPS = (DRIVE_SPEED_MPM / 60.0)
@@ -71,6 +71,10 @@ class Spiker:
                 self.state = 'receive'
                 server.ball.speed_x = RECEIVE_SPEED_PPS
                 server.ball.speed_y = DRIVE_SPEED_PPS
+            elif self.state == 'drive serve wait':
+                self.state = 'drive serve hit'
+                server.ball.speed_x = DRIVE_SPEED_PPS
+                server.ball.speed_y = DRIVE_SPEED_PPS
 
     def is_cur_state_Idle(self):
         if self.state == 'Idle':
@@ -100,9 +104,9 @@ class Spiker:
         self.frame_len = 50
         self.action_len = 110
         self.state = 'chase'
-        if server.ball.x < self.x:
+        if server.ball.x < self.x and self.x > server.net.x + 10:
             self.x += -1 * MOVE_SPEED_PPS * game_framework.frame_time
-        else:
+        elif server.ball.x >= self.x and self.x < 800:
             self.x += 1 * MOVE_SPEED_PPS * game_framework.frame_time
         return BehaviorTree.RUNNING
 
@@ -165,8 +169,6 @@ class Spiker:
 
     def is_cur_state_drive_serve_ready(self):
         if self.state == 'drive serve ready':
-            server.ball.speed_y = DRIVE_SPEED_PPS
-            server.ball.state = 'fly'
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
@@ -177,7 +179,9 @@ class Spiker:
         self.frame_len = 70
         self.action_len = 110
         if int(self.frame) == 3:
-            self.state = 'drive_serve_wait'
+            self.state = 'drive serve wait'
+            server.ball.speed_y = DRIVE_SPEED_PPS
+            server.ball.state = 'fly'
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.RUNNING
@@ -246,7 +250,7 @@ class Spiker:
         c7 = Condition('현재 상태가 drive serve hit 인가?', self.is_cur_state_drive_serve_hit)
         a7 = Action('drive serve hit', self.drive_serve_hit)
 
-        SEQ_drive_serve_hit = Sequence('drive serve hit', c6, a6)
+        SEQ_drive_serve_hit = Sequence('drive serve hit', c7, a7)
 
         c8 = Condition('현재 상태가 serve ready 인가?', self.is_cur_state_serve_ready)
         a8 = Action('serve ready', self.serve_ready)
@@ -254,10 +258,10 @@ class Spiker:
         SEQ_serve_ready = Sequence('serve ready', c8, a8)
 
         root = SEL__move_to_net_receive_or_chase_ball_or_Idle = Selector('move to net or receive or chase ball or Idle',
-                                                            SEQ_serve_ready,
                                                             SEQ_drive_serve_hit,
                                                             SEQ_drive_serve_wait,
                                                             SEQ_drive_serve_ready,
+                                                            SEQ_serve_ready,
                                                             SEQ_move_to_net_front,
                                                             SEQ_keep_receive_state,
                                                             SEQ_chase_ball,

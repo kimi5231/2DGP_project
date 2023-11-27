@@ -50,3 +50,6 @@ class Ball:
             self.dir = -1
         elif group == 'player_court:ball' or group == 'ai_court_out:ball' or group == 'ai_court:ball' or group == 'plyer_court_out:ball':
             self.state = 'Idle'
+            self.dir = 0
+            self.speed_x = 0
+            self.speed_y = 0

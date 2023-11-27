@@ -1,7 +1,7 @@
 from pico2d import load_image
 
 import game_framework
-
+import server
 
 # judge action speed
 TIME_PER_ACTION = 2.0
@@ -36,5 +36,7 @@ class Judge:
     def update(self):
         if int(self.frame) == 2:
             self.state = 'hide'
+            if self.team == 'ai' and server.spiker.state == 'serve ready':
+                server.spiker.state = 'drive serve ready'
         self.frame = ((self.frame + self.frame_num * ACTION_PER_TIME * game_framework.frame_time)
                         % self.frame_num)
