@@ -30,20 +30,18 @@ stage = 1
 
 def init_to_player_turn():
     score.turn = 'player'
-    player.cur_state = ServeWait
-    player.x = 100
-    setter.x = 488
-    blocker1.x = 470
-    blocker2.x = 455
 
-    spiker.state = 'Idle'
-    spiker.x = 700
-    enemy_setter.x = 518
-    enemy_blocker1.x = 536
-    enemy_blocker2.x = 551
+    player.cur_state, player.x = ServeWait, 100
+    setter.state, setter.x = 'Idle', 488
+    blocker1.state, blocker1.x = 'Idle', 470
+    blocker2.state, blocker2.x = 'Idle', 455
 
-    ball.x = player.x + 10
-    ball.y = player.y + 10
+    spiker.state, spiker.x = 'Idle', 700
+    enemy_setter.state, enemy_setter.x = 'Idle', 518
+    enemy_blocker1.state, enemy_blocker1.x = 'Idle', 536
+    enemy_blocker2.state, enemy_blocker2.x = 'Idle', 551
+
+    ball.x, ball.y = player.x + 10, player.y + 10
 
     judge.team = 'player'
     judge.state = 'draw'
@@ -53,20 +51,18 @@ def init_to_player_turn():
 
 def init_to_ai_turn():
     score.turn = 'ai'
-    player.cur_state = Idle
-    player.x = 300
-    setter.x = 488
-    blocker1.x = 470
-    blocker2.x = 455
 
-    spiker.state = 'serve ready'
-    spiker.x = 900
-    enemy_setter.x = 518
-    enemy_blocker1.x = 536
-    enemy_blocker2.x = 551
+    player.cur_state, player.x = Idle, 300
+    setter.state, setter.x = 'Idle', 488
+    blocker1.state, blocker1.x = 'Idle', 470
+    blocker2.state, blocker2.x = 'Idle', 455
 
-    ball.x = spiker.x - 10
-    ball.y = spiker.y + 10
+    spiker.state, spiker.x = 'serve ready', 900
+    enemy_setter.state, enemy_setter.x = 'Idle', 518
+    enemy_blocker1.state, enemy_blocker1.x = 'Idle', 536
+    enemy_blocker2.state, enemy_blocker2.x = 'Idle', 551
+
+    ball.x, ball.y = spiker.x - 10, spiker.y + 10
 
     judge.team = 'ai'
     judge.state = 'draw'

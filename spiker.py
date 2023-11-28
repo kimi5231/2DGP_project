@@ -99,7 +99,7 @@ class Spiker:
         else:
             return BehaviorTree.FAIL
 
-    def chase_ball(self, r=0.5):
+    def chase_ball(self):
         self.action = 1
         self.frame_num = 5
         self.frame_len = 50

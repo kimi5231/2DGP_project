@@ -23,6 +23,12 @@ DRIVE_SPEED_MPM = (DRIVE_SPEED_KMPH * 1000.0 / 60.0)
 DRIVE_SPEED_MPS = (DRIVE_SPEED_MPM / 60.0)
 DRIVE_SPEED_PPS = (DRIVE_SPEED_MPS * PIXEL_PER_METER)
 
+# player receive speed
+RECEIVE_SPEED_KMPH = 10.0 # Km / Hour
+RECEIVE_SPEED_MPM = (MOVE_SPEED_KMPH * 1000.0 / 60.0)
+RECEIVE_SPEED_MPS = (MOVE_SPEED_MPM / 60.0)
+RECEIVE_SPEED_PPS = (MOVE_SPEED_MPS * PIXEL_PER_METER)
+
 # player action speed
 TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
@@ -413,7 +419,8 @@ class Move:
     def do(player): # Move 상태인 동안 할 것
         player.frame = ((player.frame + player.frame_num * ACTION_PER_TIME * game_framework.frame_time)
                         % player.frame_num)
-        player.x += player.dir * MOVE_SPEED_PPS * game_framework.frame_time
+        if player.x < server.net.x - 10:
+            player.x += player.dir * MOVE_SPEED_PPS * game_framework.frame_time
 
 
     @staticmethod
@@ -520,8 +527,8 @@ class Player:
         sx = self.x - server.background.window_left
         sy = self.y - server.background.window_bottom
 
-        if self.state_machine.cur_state == Move:
-            return sx - 16, sy - 33, sx + 16, sy + 33
+        if self.state_machine.cur_state == Receive:
+            return sx, sy - 5, sx + 15, sy + 5
         elif self.state_machine.cur_state == DriveServeHit:
             return sx + 5, sy - 5, sx + 15, sy + 5
         elif self.state_machine.cur_state == SpikeServeHit:
@@ -533,7 +540,10 @@ class Player:
 
     def handle_collision(self, group, other):
         if group == 'player:ball':
-            if self.state_machine.cur_state == DriveServeHit:
+            if self.state_machine.cur_state == Receive:
+                server.ball.speed_x = RECEIVE_SPEED_PPS
+                server.ball.speed_y = RECEIVE_SPEED_PPS
+            elif self.state_machine.cur_state == DriveServeHit:
                 server.ball.speed_x = DRIVE_SPEED_PPS
                 server.ball.speed_y = DRIVE_SPEED_PPS
             elif self.state_machine.cur_state == SpikeServeHit:

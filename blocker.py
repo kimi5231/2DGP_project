@@ -1,4 +1,4 @@
-from pico2d import load_image
+from pico2d import load_image, draw_rectangle
 from sdl2 import SDL_KEYDOWN, SDLK_s
 
 import game_framework
@@ -42,6 +42,7 @@ class Blocker:
             self.image_180.clip_draw(int(self.frame) * self.frame_len,
                                      self.action * self.action_len,
                                      self.frame_len, self.action_len, sx, sy+20, 36, 86)
+        draw_rectangle(*self.get_bb())
 
     def update(self):
         self.frame = ((self.frame + self.frame_num * ACTION_PER_TIME * game_framework.frame_time)
@@ -56,7 +57,7 @@ class Blocker:
         sx = self.x - server.background.window_left
         sy = self.y - server.background.window_bottom
 
-        return sx - 25, sy - 55, sx + 25, sy + 55
+        return sx, sy + 50, sx + 10, sy + 60
 
     def handle_collision(self, group, other):
         if group == 'blocker:ball':
@@ -97,8 +98,7 @@ class Blocker:
             return BehaviorTree.RUNNING
 
     def is_ball_nearby(self, distance):
-        if self.distance_less_than(server.ball.x, server.ball.y, self.x, self.y, distance) \
-                and server.ball.y > self.y:
+        if self.distance_less_than(server.ball.x, server.ball.y, self.x, self.y, distance) and server.ball.y > self.y and server.score.turn == 'ai':
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL

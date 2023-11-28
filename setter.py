@@ -1,4 +1,4 @@
-from pico2d import load_image
+from pico2d import load_image, draw_rectangle
 
 import game_framework
 import game_world
@@ -41,6 +41,7 @@ class Setter:
             self.image.clip_composite_draw(int(self.frame) * self.frame_len,
                                            self.action * self.action_len,
                                            self.frame_len, self.action_len, 0, 'h', sx, sy, 33, 66)
+        draw_rectangle(*self.get_bb())
 
     def update(self):
         self.frame = ((self.frame + self.frame_num * ACTION_PER_TIME * game_framework.frame_time)
@@ -51,7 +52,7 @@ class Setter:
         sx = self.x - server.background.window_left
         sy = self.y - server.background.window_bottom
 
-        return sx - 25, sy - 55, sx + 25, sy + 55
+        return sx - 16, sy + 10, sx + 16, sy + 20
 
     def handle_collision(self, group, other):
         if group == 'setter:ball':
