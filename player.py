@@ -169,7 +169,6 @@ class Receive:
         player.frame_num = 5
         player.frame_len = 70
         player.action_len = 110
-        server.score.turn = 'player'
 
     @staticmethod
     def exit(player, e): # Receive 상태에서 나올 때 할 것
@@ -548,6 +547,8 @@ class Player:
     def handle_collision(self, group, other):
         if group == 'player:ball':
             if self.state_machine.cur_state == Receive:
+                server.score.turn = 'player'
+                server.setter.receive_success = True
                 server.ball.start_time = get_time()
                 server.ball.speed_x = RECEIVE_SPEED_PPS
                 server.ball.speed_y = RECEIVE_SPEED_PPS

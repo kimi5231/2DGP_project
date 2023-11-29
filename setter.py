@@ -29,6 +29,7 @@ class Setter:
         self.image = load_image('setter.png')
         self.build_behavior_tree()
         self.state = 'Idle'
+        self.receive_success = False
 
     def draw(self):
         sx = self.x - server.background.window_left
@@ -45,7 +46,7 @@ class Setter:
 
     def update(self):
         self.frame = ((self.frame + self.frame_num * ACTION_PER_TIME * game_framework.frame_time)
-                        % self.frame_num)
+                      % self.frame_num)
         self.bt.run()
 
     def get_bb(self):
@@ -56,7 +57,7 @@ class Setter:
 
     def handle_collision(self, group, other):
         if group == 'setter:ball':
-            if (self.state == 'toss wait' or self.state == 'toss ready') and self.team == server.score.turn:
+            if self.state == 'toss wait' or self.state == 'toss ready':
                 self.action = 3
                 self.frame_num = 3
                 self.frame_len = 60
@@ -67,12 +68,6 @@ class Setter:
                 server.ball.speed_x = 0
                 server.ball.dir = 0
                 server.ball.start_time = get_time()
-
-    def is_our_turn(self):
-        if self.team == server.score.turn:
-            BehaviorTree.SUCCESS
-        else:
-            BehaviorTree.FAIL
 
     def is_cur_state_Idle(self):
         if self.state == 'Idle':
@@ -86,13 +81,25 @@ class Setter:
         self.frame_len = 50
         return BehaviorTree.RUNNING
 
-    def distance_less_than(self, x1, y1, x2, y2, r):
-        distance2 = (x1 - x2) ** 2 + (y1 - y2) ** 2
-        return distance2 < (PIXEL_PER_METER * r) ** 2
+    # def distance_less_than(self, x1, y1, x2, y2, r):
+    #     distance2 = (x1 - x2) ** 2 + (y1 - y2) ** 2
+    #     return distance2 < (PIXEL_PER_METER * r) ** 2
+    #
+    # def is_ball_nearby(self, distance):
+    #     if (self.distance_less_than(server.ball.x, server.ball.y, self.x, self.y, distance)
+    #             and server.ball.y > self.y and server.score.turn == self.team):
+    #         return BehaviorTree.SUCCESS
+    #     else:
+    #         return BehaviorTree.FAIL
+    #
+    # def is_our_turn(self):
+    #     if self.team == server.score.turn:
+    #         BehaviorTree.SUCCESS
+    #     else:
+    #         BehaviorTree.FAIL
 
-    def is_ball_nearby(self, distance):
-        if (self.distance_less_than(server.ball.x, server.ball.y, self.x, self.y, distance)
-                and server.ball.y > self.y and server.score.turn == self.team):
+    def is_receive_success(self):
+        if self.receive_success:
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
@@ -101,18 +108,15 @@ class Setter:
         self.action = 1
         self.frame_num = 7
         self.frame_len = 60
-        self.state = 'toss ready'
         if int(self.frame) == 6:
             self.state = 'toss wait'
-            return BehaviorTree.SUCCESS
-        elif self.team != server.score.turn:
-            self.state = 'Idle'
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.RUNNING
 
     def is_cur_state_toss_wait(self):
         if self.state == 'toss wait':
+            self.receive_success = False
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
@@ -121,11 +125,7 @@ class Setter:
         self.action = 2
         self.frame_num = 1
         self.frame_len = 60
-        if self.team != server.score.turn:
-            self.state = 'Idle'
-            return BehaviorTree.SUCCESS
-        else:
-            return BehaviorTree.RUNNING
+        return BehaviorTree.RUNNING
 
     def is_cur_state_toss_hit(self):
         if self.state == 'toss hit':
@@ -149,12 +149,13 @@ class Setter:
 
         SEQ_keep_Idle_state = Sequence('Idle 상태 유지', c1, a1)
 
-        c2 = Condition('공이 근처에 있는가?', self.is_ball_nearby, 3)
+        # c2 = Condition('공이 근처에 있는가?', self.is_ball_nearby, 3)
+        c2 = Condition('리시브가 성공했는가?', self.is_receive_success)
         a2 = Action('toss ready', self.toss_ready)
+        #
+        # c5 = Condition('우리팀의 차례인가?', self.is_our_turn)
 
-        c5 = Condition('우리팀의 차례인가?', self.is_our_turn)
-
-        SEQ_change_toss_ready_state = Sequence('toss ready 상태로 변경', c2, c5, c1, a2)
+        SEQ_change_toss_ready_state = Sequence('toss ready 상태로 변경', c2, a2)
 
         c3 = Condition('현재 상태가 toss wait 인가?', self.is_cur_state_toss_wait)
         a3 = Action('toss wait', self.toss_wait)
@@ -166,13 +167,9 @@ class Setter:
 
         SEQ_chang_toss_hit_state = Sequence('toss hit 상태로 변경', c4, a4)
 
-        SEL_toss_ready_or_wait_or_hit = Selector('toss ready_or_wait_or_hit',
-                                                 SEQ_chang_toss_hit_state,
-                                                 SEQ_keep_toss_wait_state,
-                                                SEQ_change_toss_ready_state
-                                                 )
+        SEL_toss = Selector('toss', SEQ_chang_toss_hit_state, SEQ_keep_toss_wait_state,
+                                                SEQ_change_toss_ready_state)
 
-        root = SEL_toss_or_Idle = Selector('toss or Idle',SEL_toss_ready_or_wait_or_hit,
-                                                              SEQ_keep_Idle_state)
+        root = SEL_toss_or_Idle = Selector('toss or Idle',SEL_toss, SEQ_keep_Idle_state)
 
         self.bt = BehaviorTree(root)

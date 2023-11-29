@@ -93,6 +93,7 @@ class Spiker:
         if group == 'spiker:ball':
             if self.state == 'chase':
                 self.state = 'receive'
+                server.enemy_setter.receive_success = True
                 server.ball.speed_x = RECEIVE_SPEED_PPS
                 server.ball.speed_y = RECEIVE_SPEED_PPS
                 server.ball.start_time = get_time()
