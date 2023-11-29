@@ -1,16 +1,22 @@
-from pico2d import load_image, draw_rectangle
+from pico2d import load_image, draw_rectangle, get_time
 from sdl2 import SDL_KEYDOWN, SDLK_s
 
 import game_framework
 import server
 from behavior_tree import BehaviorTree, Condition, Action, Sequence, Selector
 
-# player move speed
+# blocker move speed
 PIXEL_PER_METER = (10.0 / 0.3) # 10 pixel 30 cm
 MOVE_SPEED_KMPH = 10.0 # Km / Hour
 MOVE_SPEED_MPM = (MOVE_SPEED_KMPH * 1000.0 / 60.0)
 MOVE_SPEED_MPS = (MOVE_SPEED_MPM / 60.0)
 MOVE_SPEED_PPS = (MOVE_SPEED_MPS * PIXEL_PER_METER)
+
+# blocker blocking speed
+BLOCKING_SPEED_KMPH = 10.0 # Km / Hour
+BLOCKING_SPEED_MPM = (BLOCKING_SPEED_KMPH * 1000.0 / 60.0)
+BLOCKING_SPEED_MPS = (BLOCKING_SPEED_MPM / 60.0)
+BLOCKING_SPEED_PPS = (BLOCKING_SPEED_MPS * PIXEL_PER_METER)
 
 # blocker action speed
 TIME_PER_ACTION = 0.5
@@ -57,11 +63,18 @@ class Blocker:
         sx = self.x - server.background.window_left
         sy = self.y - server.background.window_bottom
 
-        return sx, sy + 50, sx + 10, sy + 60
+        if self.state == 'blocking hit':
+            return sx, sy + 50, sx + 10, sy + 70
+        else:
+            return 0, 0, 0, 0
 
     def handle_collision(self, group, other):
         if group == 'blocker:ball':
-            pass
+            if self.state == 'blocking hit':
+                server.ball.speed_x = BLOCKING_SPEED_PPS
+                server.ball.speed_y = 0
+                server.score.turn = 'player'
+                server.ball.start_time = get_time()
 
     def is_cur_state_Idle(self):
         if self.state == 'Idle':
