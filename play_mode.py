@@ -32,29 +32,6 @@ def handle_events():
 
 
 def init():
-    server.background = Background()
-    game_world.add_object(server.background, 0)
-
-    server.player_court = Player_Court()
-    game_world.add_object(server.player_court, 0)
-    game_world.add_collision_pair('player_court:ball', server.player_court, None)
-
-    server.ai_court = AI_Court()
-    game_world.add_object(server.ai_court, 0)
-    game_world.add_collision_pair('ai_court:ball', server.ai_court, None)
-
-    server.player_court_out = Player_Court_Out()
-    game_world.add_object(server.player_court_out, 0)
-    game_world.add_collision_pair('player_court_out:ball', server.player_court_out, None)
-
-    server.ai_court_out = AI_Court_Out()
-    game_world.add_object(server.ai_court_out, 0)
-    game_world.add_collision_pair('ai_court_out:ball', server.ai_court_out, None)
-
-    server.net = Net()
-    game_world.add_object(server.net, 0)
-    game_world.add_collision_pair('net:ball', server.net, None)
-
     server.player = Player()
     game_world.add_object(server.player, 2)
     game_world.add_collision_pair('player:ball', server.player, None)
@@ -98,6 +75,29 @@ def init():
     game_world.add_collision_pair('player_court_out:ball', None, server.ball)
     game_world.add_collision_pair('ai_court_out:ball', None, server.ball)
     game_world.add_collision_pair('net:ball', None, server.ball)
+
+    server.background = Background()
+    game_world.add_object(server.background, 0)
+
+    server.player_court = Player_Court()
+    game_world.add_object(server.player_court, 0)
+    game_world.add_collision_pair('player_court:ball', server.player_court, None)
+
+    server.ai_court = AI_Court()
+    game_world.add_object(server.ai_court, 0)
+    game_world.add_collision_pair('ai_court:ball', server.ai_court, None)
+
+    server.player_court_out = Player_Court_Out()
+    game_world.add_object(server.player_court_out, 0)
+    game_world.add_collision_pair('player_court_out:ball', server.player_court_out, None)
+
+    server.ai_court_out = AI_Court_Out()
+    game_world.add_object(server.ai_court_out, 0)
+    game_world.add_collision_pair('ai_court_out:ball', server.ai_court_out, None)
+
+    server.net = Net()
+    game_world.add_object(server.net, 0)
+    game_world.add_collision_pair('net:ball', server.net, None)
 
     server.timer = Timer()
     game_world.add_object(server.timer, 3)

@@ -14,11 +14,14 @@ class Background:
         self.h = self.image.h
         self.court_x, self.court_y = 500, 51
         self.net_x, self.net_y = 500, 97
+        self.window_left = int(server.ball.x) - self.cw // 2
+        self.window_bottom = int(server.ball.y) - self.ch // 2
+
     def draw(self):
-        court_sx = self.court_x - server.background.window_left
-        court_sy = self.court_y - server.background.window_bottom
-        net_sx = self.net_x - server.background.window_left
-        net_sy = self.net_y - server.background.window_bottom
+        court_sx = self.court_x - self.window_left
+        court_sy = self.court_y - self.window_bottom
+        net_sx = self.net_x - self.window_left
+        net_sy = self.net_y - self.window_bottom
 
         self.image.clip_draw_to_origin(self.window_left, self.window_bottom, self.cw, self.ch, 0, 0)
         self.court_image.clip_draw(0, 0, 600, 10, court_sx, court_sy)
