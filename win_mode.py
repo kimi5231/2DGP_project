@@ -2,6 +2,7 @@ from pico2d import load_image, load_font, clear_canvas, update_canvas, get_event
 from sdl2 import SDL_QUIT, SDL_KEYDOWN, SDLK_ESCAPE
 
 import game_framework
+import match_mode
 import play_mode
 
 
@@ -27,7 +28,7 @@ def handle_events():
 
 def update():
     delay(3.0)
-    game_framework.change_mode(play_mode)
+    game_framework.change_mode(match_mode)
 
 
 def draw():
