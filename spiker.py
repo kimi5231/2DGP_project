@@ -79,7 +79,7 @@ class Spiker:
         if self.state == 'chase':
             return sx - 16, sy - 33, sx + 16, sy + 33
         elif self.state == 'attack wait':
-            return sx - 10, sy + 70, sx, sy + 80
+            return sx - 10, sy + 70, sx + 10, sy + 80
         elif self.state == 'drive serve wait':
             return sx - 15, sy - 5, sx - 5, sy + 5
         else:

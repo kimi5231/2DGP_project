@@ -48,7 +48,7 @@ class Ball:
             self.dir = -1
         if group == 'enemy_blocker:ball':
             self.dir = -1
-        if group == 'player_court:ball' or group == 'ai_court_out:ball' or group == 'ai_court:ball' or group == 'plyer_court_out:ball':
+        if group == 'player_court:ball' or group == 'ai_court_out:ball' or group == 'ai_court:ball' or group == 'player_court_out:ball':
             self.state = 'Idle'
             self.dir = 0
             self.speed_x = 0
