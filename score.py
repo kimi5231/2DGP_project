@@ -1,6 +1,7 @@
 from pico2d import load_font
 
 import game_framework
+import lose_mode
 import server
 
 
@@ -26,4 +27,4 @@ class Score:
         if self.player_score >= 15 and self.player_score - self.ai_score >= 2:
             server.stage += 1
         elif self.ai_score >= 15 and self.ai_score - self.player_score >= 2:
-            pass
+            game_framework.change_mode(lose_mode)

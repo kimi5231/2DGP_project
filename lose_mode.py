@@ -8,7 +8,7 @@ import title_mode
 def init():
     global image
 
-    image = load_image('lose.jpg')
+    image = load_image('lose.png')
 
 
 def finish():
@@ -26,7 +26,7 @@ def handle_events():
 
 
 def update():
-    delay(1.0)
+    delay(3.0)
     game_framework.change_mode(title_mode)
 
 
