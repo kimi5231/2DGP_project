@@ -101,7 +101,7 @@ class Spiker:
                 self.state = 'attack hit'
                 server.ball.start_time = get_time()
                 server.ball.speed_x = SPIKE_SPEED_PPS
-                server.ball.speed_y = -SPIKE_SPEED_PPS
+                server.ball.speed_y = -SPIKE_SPEED_PPS//2
             elif self.state == 'drive serve wait':
                 self.state = 'drive serve hit'
                 server.ball.start_time = get_time()
@@ -166,7 +166,7 @@ class Spiker:
         else:
             return BehaviorTree.FAIL
 
-    def move_to_net(self, r=1.0):
+    def move_to_net(self, r=0.5):
         self.action = 1
         self.frame_num = 5
         self.frame_len = 50
