@@ -11,6 +11,12 @@ MOVE_SPEED_MPM = (MOVE_SPEED_KMPH * 1000.0 / 60.0)
 MOVE_SPEED_MPS = (MOVE_SPEED_MPM / 60.0)
 MOVE_SPEED_PPS = (MOVE_SPEED_MPS * PIXEL_PER_METER)
 
+# spiker serve speed
+SERVE_SPEED_KMPH = 10.0 # Km / Hour
+SERVE_SPEED_MPM = (SERVE_SPEED_KMPH * 1000.0 / 60.0)
+SERVE_SPEED_MPS = (SERVE_SPEED_MPM / 60.0)
+SERVE_SPEED_PPS = (SERVE_SPEED_MPS * PIXEL_PER_METER)
+
 # spiker drive speed
 DRIVE_SPEED_KMPH = 35.0 # Km / Hour
 DRIVE_SPEED_MPM = (DRIVE_SPEED_KMPH * 1000.0 / 60.0)
@@ -69,10 +75,20 @@ class Spiker:
     def get_bb(self):
         sx = self.x - server.background.window_left
         sy = self.y - server.background.window_bottom
-        if self.action_len == 110:
+
+        if self.state == 'chase':
             return sx - 16, sy - 33, sx + 16, sy + 33
-        elif self.action_len == 210:
-            return sx - 25, sy - 17, sx + 25, sy + 83
+        elif self.state == 'attack wait':
+            return sx - 10, sy + 70, sx, sy + 80
+        elif self.state == 'drive serve wait':
+            return sx - 15, sy - 5, sx - 5, sy + 5
+        else:
+            return 0, 0, 0, 0
+        # if self.action_len == 110:
+        #     return sx - 16, sy - 33, sx + 16, sy + 33
+        # elif self.action_len == 210:
+        #     return sx - 25, sy - 17, sx + 25, sy + 83
+
     def handle_collision(self, group, other):
         if group == 'spiker:ball':
             if self.state == 'chase':
@@ -81,7 +97,8 @@ class Spiker:
                 server.ball.speed_y = RECEIVE_SPEED_PPS
                 server.ball.start_time = get_time()
                 server.score.turn = 'ai'
-            elif self.state == 'attack hit':
+            elif self.state == 'attack wait':
+                self.state = 'attack hit'
                 server.ball.start_time = get_time()
                 server.ball.speed_x = SPIKE_SPEED_PPS
                 server.ball.speed_y = -SPIKE_SPEED_PPS
@@ -173,10 +190,23 @@ class Spiker:
         self.frame_len = 80
         self.action_len = 210
         if int(self.frame) == 6:
-            self.state = 'attack hit'
+            self.state = 'attack wait'
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.RUNNING
+
+    def is_cur_state_attack_wait(self):
+        if self.state == 'attack wait':
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    def attack_wait(self):
+        self.action = 4
+        self.frame_num = 1
+        self.frame_len = 80
+        self.action_len = 210
+        return BehaviorTree.RUNNING
 
     def is_cur_state_attack_hit(self):
         if self.state == 'attack hit':
@@ -221,7 +251,7 @@ class Spiker:
         self.action_len = 110
         if int(self.frame) == 3:
             self.state = 'drive serve wait'
-            server.ball.speed_y = DRIVE_SPEED_PPS
+            server.ball.speed_y = SERVE_SPEED_PPS
             server.ball.state = 'fly'
             return BehaviorTree.SUCCESS
         else:
@@ -290,7 +320,13 @@ class Spiker:
 
         SEQ_change_attack_hit = Sequence('attack hit 상태로 변경', c6, a6)
 
-        SEL_attack = Selector('attak', SEQ_change_attack_hit, SEQ_change_attack_ready, SEQ_move_to_net_front,
+        c11 = Condition('현재 상태가 attack wait 인가?', self.is_cur_state_attack_wait)
+        a11 = Action('attack wait', self.attack_wait)
+
+        SEQ_keep_attack_wait = Sequence('attack wait 상태 유지', c11, a11)
+
+        SEL_attack = Selector('attack', SEQ_change_attack_hit, SEQ_keep_attack_wait, SEQ_change_attack_ready,
+                              SEQ_move_to_net_front,
                               SEL_receive_or_chase_ball)
 
         c7 = Condition('현재 상태가 drive serve ready 인가?', self.is_cur_state_drive_serve_ready)
