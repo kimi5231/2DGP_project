@@ -173,10 +173,22 @@ class Spiker:
         self.action_len = 110
         self.x += -1 * MOVE_SPEED_PPS * game_framework.frame_time
         if self.distance_less_than(server.background.net_x, server.background.net_y, self.x, self.y, r):
-            self.state = 'attack ready' # 수정
+            self.state = 'setter toss wait'
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.RUNNING
+
+    def is_setter_toss_wait(self):
+        if self.state == 'setter toss wait':
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    def setter_toss_wait(self):
+        self.action = 0
+        self.frame_num = 1
+        self.frame_len = 50
+        return BehaviorTree.RUNNING
 
     def is_cur_state_attack_ready(self):
         if self.state == 'attack ready':
@@ -310,6 +322,15 @@ class Spiker:
 
         SEQ_move_to_net_front = Sequence('네트 앞으로 이동', c4, a4)
 
+        c12 = Condition('셰터의 토스를 기다려야 하는가?', self.is_setter_toss_wait)
+        a12 = Action('셰터의 토스 대기', self.setter_toss_wait)
+
+        SEQ_wait_setter_toss_net_front = Sequence('네트 앞에서 셰터 토스 대기', c12, a12)
+
+        SEL_move_to_net_or_setter_toss_wait = Selector('move to net or setter toss wait',
+                                                       SEQ_wait_setter_toss_net_front,
+                                                       SEQ_move_to_net_front)
+
         c5 = Condition('현재 상태가 attack ready 인가?', self.is_cur_state_attack_ready)
         a5 = Action('attack ready', self.attack_ready)
 
@@ -326,7 +347,7 @@ class Spiker:
         SEQ_keep_attack_wait = Sequence('attack wait 상태 유지', c11, a11)
 
         SEL_attack = Selector('attack', SEQ_change_attack_hit, SEQ_keep_attack_wait, SEQ_change_attack_ready,
-                              SEQ_move_to_net_front,
+                              SEL_move_to_net_or_setter_toss_wait,
                               SEL_receive_or_chase_ball)
 
         c7 = Condition('현재 상태가 drive serve ready 인가?', self.is_cur_state_drive_serve_ready)
