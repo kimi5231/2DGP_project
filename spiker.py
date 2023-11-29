@@ -84,10 +84,6 @@ class Spiker:
             return sx - 15, sy - 5, sx - 5, sy + 5
         else:
             return 0, 0, 0, 0
-        # if self.action_len == 110:
-        #     return sx - 16, sy - 33, sx + 16, sy + 33
-        # elif self.action_len == 210:
-        #     return sx - 25, sy - 17, sx + 25, sy + 83
 
     def handle_collision(self, group, other):
         if group == 'spiker:ball':
