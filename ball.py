@@ -5,8 +5,8 @@ import server
 
 # ball gravity speed
 PIXEL_PER_METER = (10.0 / 0.3) # 10 pixel 30 cm
-Gravity_SPEED_MPS = 9.8
-Gravity_SPEED_PPS = (Gravity_SPEED_MPS * PIXEL_PER_METER)
+Gravity_SPEED_MPSS = 9.8//2
+Gravity_SPEED_PPS = (Gravity_SPEED_MPSS * PIXEL_PER_METER)
 
 
 class Ball:
@@ -14,7 +14,7 @@ class Ball:
         self.x, self.y, self.dir, self.speed_x, self.speed_y = x, y, dir, speed_x, speed_y
         self.state = 'Idle'
         self.image = load_image('ball.png')
-        self.start_time = get_time()
+        self.start_time = 0.0
 
     def draw(self):
         sx = self.x - server.background.window_left
@@ -40,16 +40,18 @@ class Ball:
     def handle_collision(self, group, other):
         if group == 'player:ball':
             self.dir = 1
-        elif group == 'setter:ball':
+        if group == 'setter:ball':
             self.dir = 0
-        elif group == 'blocker:ball':
+        if group == 'blocker:ball':
             self.dir = 1
-        elif group == 'spiker:ball':
+        if group == 'spiker:ball':
             self.dir = -1
-        elif group == 'enemy_blocker:ball':
+        if group == 'enemy_blocker:ball':
             self.dir = -1
-        elif group == 'player_court:ball' or group == 'ai_court_out:ball' or group == 'ai_court:ball' or group == 'plyer_court_out:ball':
+        if group == 'player_court:ball' or group == 'ai_court_out:ball' or group == 'ai_court:ball' or group == 'plyer_court_out:ball':
             self.state = 'Idle'
             self.dir = 0
             self.speed_x = 0
             self.speed_y = 0
+        if group == 'net:ball':
+            self.dir *= -1

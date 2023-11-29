@@ -1,4 +1,4 @@
-from pico2d import load_image, draw_rectangle
+from pico2d import load_image, draw_rectangle, get_time
 
 import game_framework
 import server
@@ -6,22 +6,28 @@ from behavior_tree import BehaviorTree, Action, Condition, Sequence, Selector
 
 # spiker move speed
 PIXEL_PER_METER = (10.0 / 0.3) # 10 pixel 30 cm
-MOVE_SPEED_KMPH = 10.0 # Km / Hour
+MOVE_SPEED_KMPH = 20.0 # Km / Hour
 MOVE_SPEED_MPM = (MOVE_SPEED_KMPH * 1000.0 / 60.0)
 MOVE_SPEED_MPS = (MOVE_SPEED_MPM / 60.0)
 MOVE_SPEED_PPS = (MOVE_SPEED_MPS * PIXEL_PER_METER)
 
 # spiker drive speed
-DRIVE_SPEED_KMPH = 50.0 # Km / Hour
+DRIVE_SPEED_KMPH = 35.0 # Km / Hour
 DRIVE_SPEED_MPM = (DRIVE_SPEED_KMPH * 1000.0 / 60.0)
 DRIVE_SPEED_MPS = (DRIVE_SPEED_MPM / 60.0)
 DRIVE_SPEED_PPS = (DRIVE_SPEED_MPS * PIXEL_PER_METER)
 
+# spiker spike speed
+SPIKE_SPEED_KMPH = 60.0 # Km / Hour
+SPIKE_SPEED_MPM = (SPIKE_SPEED_KMPH * 1000.0 / 60.0)
+SPIKE_SPEED_MPS = (SPIKE_SPEED_MPM / 60.0)
+SPIKE_SPEED_PPS = (SPIKE_SPEED_MPS * PIXEL_PER_METER)
+
 # spiker receive speed
 RECEIVE_SPEED_KMPH = 10.0 # Km / Hour
-RECEIVE_SPEED_MPM = (MOVE_SPEED_KMPH * 1000.0 / 60.0)
-RECEIVE_SPEED_MPS = (MOVE_SPEED_MPM / 60.0)
-RECEIVE_SPEED_PPS = (MOVE_SPEED_MPS * PIXEL_PER_METER)
+RECEIVE_SPEED_MPM = (RECEIVE_SPEED_KMPH * 1000.0 / 60.0)
+RECEIVE_SPEED_MPS = (RECEIVE_SPEED_MPM / 60.0)
+RECEIVE_SPEED_PPS = (RECEIVE_SPEED_MPS * PIXEL_PER_METER)
 
 # spiker action speed
 TIME_PER_ACTION = 0.5
@@ -52,7 +58,7 @@ class Spiker:
         elif self.action_len == 210:
             self.image_210.clip_composite_draw(int(self.frame) * self.frame_len,
                                                self.action * self.action_len,
-                                               self.frame_len, self.action_len, 0, 'h', sx, sy + 20, 36, 86)
+                                               self.frame_len, self.action_len, 0, 'h', sx, sy + 33, 50, 100)
         draw_rectangle(*self.get_bb())
 
     def update(self):
@@ -63,17 +69,25 @@ class Spiker:
     def get_bb(self):
         sx = self.x - server.background.window_left
         sy = self.y - server.background.window_bottom
-        return sx - 16, sy - 33, sx + 16, sy + 33
-
+        if self.action_len == 110:
+            return sx - 16, sy - 33, sx + 16, sy + 33
+        elif self.action_len == 210:
+            return sx - 25, sy - 17, sx + 25, sy + 83
     def handle_collision(self, group, other):
         if group == 'spiker:ball':
             if self.state == 'chase':
                 self.state = 'receive'
                 server.ball.speed_x = RECEIVE_SPEED_PPS
-                server.ball.speed_y = DRIVE_SPEED_PPS
+                server.ball.speed_y = RECEIVE_SPEED_PPS
+                server.ball.start_time = get_time()
                 server.score.turn = 'ai'
+            elif self.state == 'attack hit':
+                server.ball.start_time = get_time()
+                server.ball.speed_x = SPIKE_SPEED_PPS
+                server.ball.speed_y = -SPIKE_SPEED_PPS
             elif self.state == 'drive serve wait':
                 self.state = 'drive serve hit'
+                server.ball.start_time = get_time()
                 server.ball.speed_x = DRIVE_SPEED_PPS
                 server.ball.speed_y = DRIVE_SPEED_PPS
 
@@ -124,6 +138,7 @@ class Spiker:
         self.action_len = 110
         if int(self.frame) == 4:
             self.state = 'move to net'
+            server.score.turn = 'ai'
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.RUNNING
@@ -134,26 +149,51 @@ class Spiker:
         else:
             return BehaviorTree.FAIL
 
-    def move_to_net(self, r=0.5):
+    def move_to_net(self, r=1.0):
         self.action = 1
         self.frame_num = 5
         self.frame_len = 50
         self.action_len = 110
         self.x += -1 * MOVE_SPEED_PPS * game_framework.frame_time
-        if self.distance_less_than(server.background.net_x, server.background.net_y, self.x, self.y, 0.5):
-            self.state = 'Idle'
+        if self.distance_less_than(server.background.net_x, server.background.net_y, self.x, self.y, r):
+            self.state = 'attack ready' # 수정
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.RUNNING
 
-    def is_cur_state_wait_setter_toss(self):
-        if self.state == 'wait setter toss':
+    def is_cur_state_attack_ready(self):
+        if self.state == 'attack ready':
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
 
-    def spike(self):
-        pass
+    def attack_ready(self):
+        self.action = 3
+        self.frame_num = 7
+        self.frame_len = 80
+        self.action_len = 210
+        if int(self.frame) == 6:
+            self.state = 'attack hit'
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
+
+    def is_cur_state_attack_hit(self):
+        if self.state == 'attack hit':
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    def attack_hit(self):
+        self.action = 5
+        self.frame_num = 6
+        self.frame_len = 80
+        self.action_len = 210
+        if int(self.frame) == 5:
+            self.state = 'Idle'
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
 
     def is_cur_state_serve_ready(self):
         if self.state == 'serve ready':
@@ -226,46 +266,60 @@ class Spiker:
         c2 = Condition('공이 근처에 있는가?', self.is_ball_nearby, 10)
         a2 = Action('chase ball', self.chase_ball)
 
-        SEQ_chase_ball = Sequence('chase ball 상태로 변경', c2, a2)
+        SEQ_change_chase_ball = Sequence('chase ball 상태로 변경', c2, a2)
 
         c3 = Condition('현재 상태가 receive 인가?', self.is_cur_state_receive)
         a3 = Action('receive', self.receive)
 
-        SEQ_keep_receive_state = Sequence('receive 상태 유지', c3, a3)
+        SEQ_chage_receive_state = Sequence('receive 상태로 변경', c3, a3)
+
+        SEL_receive_or_chase_ball = Selector('receive or chase ball', SEQ_chage_receive_state, SEQ_change_chase_ball)
 
         c4 = Condition('네트 앞으로 가야 하는가?', self.is_move_to_net)
         a4 = Action('move to net', self.move_to_net)
 
         SEQ_move_to_net_front = Sequence('네트 앞으로 이동', c4, a4)
 
-        c5 = Condition('현재 상태가 drive serve ready 인가?', self.is_cur_state_drive_serve_ready)
-        a5 = Action('drive serve ready', self.drive_serve_ready)
+        c5 = Condition('현재 상태가 attack ready 인가?', self.is_cur_state_attack_ready)
+        a5 = Action('attack ready', self.attack_ready)
 
-        SEQ_drive_serve_ready = Sequence('drive serve ready', c5, a5)
+        SEQ_change_attack_ready = Sequence('attack ready 상태로 변경', c5, a5)
 
-        c6 = Condition('현재 상태가 drive serve wait 인가?', self.is_cur_state_drive_serve_wait)
-        a6 = Action('drive serve wait', self.drive_serve_wait)
+        c6 = Condition('현재 상태가 attack hit 인가?', self.is_cur_state_attack_hit)
+        a6 = Action('attack hit', self.attack_hit)
 
-        SEQ_drive_serve_wait = Sequence('drive serve wait', c6, a6)
+        SEQ_change_attack_hit = Sequence('attack hit 상태로 변경', c6, a6)
 
-        c7 = Condition('현재 상태가 drive serve hit 인가?', self.is_cur_state_drive_serve_hit)
-        a7 = Action('drive serve hit', self.drive_serve_hit)
+        SEL_attack = Selector('attak', SEQ_change_attack_hit, SEQ_change_attack_ready, SEQ_move_to_net_front,
+                              SEL_receive_or_chase_ball)
 
-        SEQ_drive_serve_hit = Sequence('drive serve hit', c7, a7)
+        c7 = Condition('현재 상태가 drive serve ready 인가?', self.is_cur_state_drive_serve_ready)
+        a7 = Action('drive serve ready', self.drive_serve_ready)
 
-        c8 = Condition('현재 상태가 serve ready 인가?', self.is_cur_state_serve_ready)
-        a8 = Action('serve ready', self.serve_ready)
+        SEQ_chage_drive_serve_ready = Sequence('drive serve ready 상태로 변경', c7, a7)
 
-        SEQ_serve_ready = Sequence('serve ready', c8, a8)
+        c8 = Condition('현재 상태가 drive serve wait 인가?', self.is_cur_state_drive_serve_wait)
+        a8 = Action('drive serve wait', self.drive_serve_wait)
 
-        root = SEL__move_to_net_receive_or_chase_ball_or_Idle = Selector('move to net or receive or chase ball or Idle',
-                                                            SEQ_drive_serve_hit,
-                                                            SEQ_drive_serve_wait,
-                                                            SEQ_drive_serve_ready,
-                                                            SEQ_serve_ready,
-                                                            SEQ_move_to_net_front,
-                                                            SEQ_keep_receive_state,
-                                                            SEQ_chase_ball,
-                                                            SEQ_keep_Idle_state)
+        SEQ_chage_drive_serve_wait = Sequence('drive serve wait 상태로 변경', c8, a8)
+
+        c9 = Condition('현재 상태가 drive serve hit 인가?', self.is_cur_state_drive_serve_hit)
+        a9 = Action('drive serve hit 상태로 변경', self.drive_serve_hit)
+
+        SEQ_change_drive_serve_hit = Sequence('drive serve hit', c9, a9)
+
+        c10 = Condition('현재 상태가 serve ready 인가?', self.is_cur_state_serve_ready)
+        a10 = Action('serve ready', self.serve_ready)
+
+        SEQ_keep_serve_ready = Sequence('serve ready 상태 유지', c10, a10)
+
+        SEL_drive_serve = Selector('drive serve', SEQ_change_drive_serve_hit,
+                                                  SEQ_chage_drive_serve_wait,
+                                                  SEQ_chage_drive_serve_ready)
+
+        SEL_serve = Selector('serve', SEL_drive_serve,
+                                                  SEQ_keep_serve_ready)
+
+        root = SEL_attack_or_serve_or_Idle = Selector('attack or serve or Idle', SEL_serve, SEL_attack, SEQ_keep_Idle_state)
 
         self.bt = BehaviorTree(root)

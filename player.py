@@ -6,22 +6,28 @@ import server
 
 # player move speed
 PIXEL_PER_METER = (10.0 / 0.3) # 10 pixel 30 cm
-MOVE_SPEED_KMPH = 10.0 # Km / Hour
+MOVE_SPEED_KMPH = 20.0 # Km / Hour
 MOVE_SPEED_MPM = (MOVE_SPEED_KMPH * 1000.0 / 60.0)
 MOVE_SPEED_MPS = (MOVE_SPEED_MPM / 60.0)
 MOVE_SPEED_PPS = (MOVE_SPEED_MPS * PIXEL_PER_METER)
 
-# player spike speed
-SPIKE_SPEED_KMPH = 105.0 # Km / Hour
-SPIKE_SPEED_MPM = (SPIKE_SPEED_KMPH * 1000.0 / 60.0)
-SPIKE_SPEED_MPS = (SPIKE_SPEED_MPM / 60.0)
-SPIKE_SPEED_PPS = (SPIKE_SPEED_MPS * PIXEL_PER_METER)
+# player serve speed
+SERVE_SPEED_KMPH = 10.0 # Km / Hour
+SERVE_SPEED_MPM = (SERVE_SPEED_KMPH * 1000.0 / 60.0)
+SERVE_SPEED_MPS = (SERVE_SPEED_MPM / 60.0)
+SERVE_SPEED_PPS = (SERVE_SPEED_MPS * PIXEL_PER_METER)
 
 # player drive speed
-DRIVE_SPEED_KMPH = 50.0 # Km / Hour
+DRIVE_SPEED_KMPH = 35.0 # Km / Hour
 DRIVE_SPEED_MPM = (DRIVE_SPEED_KMPH * 1000.0 / 60.0)
 DRIVE_SPEED_MPS = (DRIVE_SPEED_MPM / 60.0)
 DRIVE_SPEED_PPS = (DRIVE_SPEED_MPS * PIXEL_PER_METER)
+
+# player spike speed
+SPIKE_SPEED_KMPH = 60.0 # Km / Hour
+SPIKE_SPEED_MPM = (SPIKE_SPEED_KMPH * 1000.0 / 60.0)
+SPIKE_SPEED_MPS = (SPIKE_SPEED_MPM / 60.0)
+SPIKE_SPEED_PPS = (SPIKE_SPEED_MPS * PIXEL_PER_METER)
 
 # player receive speed
 RECEIVE_SPEED_KMPH = 10.0 # Km / Hour
@@ -253,7 +259,7 @@ class SpikeServeReady:
         player.frame_num = 10
         player.frame_len = 80
         player.action_len = 210
-        server.ball.speed_y = DRIVE_SPEED_PPS
+        server.ball.speed_y = SERVE_SPEED_PPS
         server.ball.state = 'fly'
 
     @staticmethod
@@ -344,7 +350,8 @@ class DriveServeReady:
         player.frame_num = 4
         player.frame_len = 70
         player.action_len = 110
-        server.ball.speed_y = DRIVE_SPEED_PPS
+        server.ball.speed_y = SERVE_SPEED_PPS
+        server.ball.start_time = get_time()
         server.ball.state = 'fly'
 
     @staticmethod
@@ -541,11 +548,13 @@ class Player:
     def handle_collision(self, group, other):
         if group == 'player:ball':
             if self.state_machine.cur_state == Receive:
+                server.ball.start_time = get_time()
                 server.ball.speed_x = RECEIVE_SPEED_PPS
                 server.ball.speed_y = RECEIVE_SPEED_PPS
             elif self.state_machine.cur_state == DriveServeHit:
+                server.ball.start_time = get_time()
                 server.ball.speed_x = DRIVE_SPEED_PPS
-                server.ball.speed_y = DRIVE_SPEED_PPS
+                server.ball.speed_y = DRIVE_SPEED_PPS//2
             elif self.state_machine.cur_state == SpikeServeHit:
                 server.ball.speed_x = SPIKE_SPEED_PPS
                 server.ball.speed_y = DRIVE_SPEED_PPS

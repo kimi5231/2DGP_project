@@ -1,4 +1,4 @@
-from pico2d import load_image, draw_rectangle
+from pico2d import load_image, draw_rectangle, get_time
 
 import game_framework
 import game_world
@@ -8,7 +8,7 @@ from behavior_tree import BehaviorTree, Action, Condition, Sequence, Selector
 
 # setter toss speed
 PIXEL_PER_METER = (10.0 / 0.3) # 10 pixel 30 cm
-TOSS_SPEED_KMPH = 10.0 # Km / Hour
+TOSS_SPEED_KMPH = 20.0 # Km / Hour
 TOSS_SPEED_MPM = (TOSS_SPEED_KMPH * 1000.0 / 60.0)
 TOSS_SPEED_MPS = (TOSS_SPEED_MPM / 60.0)
 TOSS_SPEED_PPS = (TOSS_SPEED_MPS * PIXEL_PER_METER)
@@ -52,17 +52,27 @@ class Setter:
         sx = self.x - server.background.window_left
         sy = self.y - server.background.window_bottom
 
-        return sx - 16, sy + 10, sx + 16, sy + 20
+        return sx - 15, sy + 10, sx + 15, sy + 20
 
     def handle_collision(self, group, other):
         if group == 'setter:ball':
-            self.action = 3
-            self.frame_num = 3
-            self.frame_len = 60
-            self.state = 'Idle'
-            server.ball.speed_y = TOSS_SPEED_PPS
-            server.ball.speed_x = 0
-            server.ball.dir = 0
+            if (self.state == 'toss wait' or self.state == 'toss ready') and self.team == server.score.turn:
+                self.action = 3
+                self.frame_num = 3
+                self.frame_len = 60
+                self.state = 'toss hit'
+                if self.team == 'ai':
+                    server.spiker.state = 'attack ready'
+                server.ball.speed_y = TOSS_SPEED_PPS
+                server.ball.speed_x = 0
+                server.ball.dir = 0
+                server.ball.start_time = get_time()
+
+    def is_our_turn(self):
+        if self.team == server.score.turn:
+            BehaviorTree.SUCCESS
+        else:
+            BehaviorTree.FAIL
 
     def is_cur_state_Idle(self):
         if self.state == 'Idle':
@@ -95,6 +105,9 @@ class Setter:
         if int(self.frame) == 6:
             self.state = 'toss wait'
             return BehaviorTree.SUCCESS
+        elif self.team != server.score.turn:
+            self.state = 'Idle'
+            return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.RUNNING
 
@@ -108,7 +121,27 @@ class Setter:
         self.action = 2
         self.frame_num = 1
         self.frame_len = 60
-        return BehaviorTree.RUNNING
+        if self.team != server.score.turn:
+            self.state = 'Idle'
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
+
+    def is_cur_state_toss_hit(self):
+        if self.state == 'toss hit':
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    def toss_hit(self):
+        self.action = 3
+        self.frame_num = 4
+        self.frame_len = 60
+        if int(self.frame) == 3:
+            self.state = 'Idle'
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
 
     def build_behavior_tree(self):
         c1 = Condition('현재 상태가 Idle 인가?', self.is_cur_state_Idle)
@@ -116,19 +149,30 @@ class Setter:
 
         SEQ_keep_Idle_state = Sequence('Idle 상태 유지', c1, a1)
 
-        c2 = Condition('공이 근처에 있는가?', self.is_ball_nearby, 7)
+        c2 = Condition('공이 근처에 있는가?', self.is_ball_nearby, 3)
         a2 = Action('toss ready', self.toss_ready)
 
-        SEQ_change_toss_ready_state = Sequence('toss ready 상태로 변경', c2, a2)
+        c5 = Condition('우리팀의 차례인가?', self.is_our_turn)
+
+        SEQ_change_toss_ready_state = Sequence('toss ready 상태로 변경', c2, c5, c1, a2)
 
         c3 = Condition('현재 상태가 toss wait 인가?', self.is_cur_state_toss_wait)
         a3 = Action('toss wait', self.toss_wait)
 
         SEQ_keep_toss_wait_state = Sequence('toss wait 상태 유지', c3, a3)
 
-        root = SEL_toss_wait_or_toss_ready_or_Idle = Selector('toss wait or toss ready or Idle',
-                                                              SEQ_keep_toss_wait_state,
-                                                              SEQ_change_toss_ready_state,
+        c4 = Condition('현재 상태가 toss hit 인가?', self.is_cur_state_toss_hit)
+        a4 = Action('toss hit', self.toss_hit)
+
+        SEQ_chang_toss_hit_state = Sequence('toss hit 상태로 변경', c4, a4)
+
+        SEL_toss_ready_or_wait_or_hit = Selector('toss ready_or_wait_or_hit',
+                                                 SEQ_chang_toss_hit_state,
+                                                 SEQ_keep_toss_wait_state,
+                                                SEQ_change_toss_ready_state
+                                                 )
+
+        root = SEL_toss_or_Idle = Selector('toss or Idle',SEL_toss_ready_or_wait_or_hit,
                                                               SEQ_keep_Idle_state)
 
         self.bt = BehaviorTree(root)
