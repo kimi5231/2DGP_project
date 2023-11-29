@@ -35,8 +35,8 @@ def update():
 
 def draw():
     clear_canvas()
-    image.draw(500, 300, 1000, 600)
-    font.draw(300, 200, 'Push Space', (255, 255, 255))
+    image.draw(300, 300, 600, 600)
+    font.draw(200, 200, 'Push Space', (255, 255, 255))
     update_canvas()
 
 
