@@ -11,23 +11,23 @@ MOVE_SPEED_MPM = (MOVE_SPEED_KMPH * 1000.0 / 60.0)
 MOVE_SPEED_MPS = (MOVE_SPEED_MPM / 60.0)
 MOVE_SPEED_PPS = (MOVE_SPEED_MPS * PIXEL_PER_METER)
 
-# spiker serve speed
-SERVE_SPEED_KMPH = 10.0 # Km / Hour
-SERVE_SPEED_MPM = (SERVE_SPEED_KMPH * 1000.0 / 60.0)
-SERVE_SPEED_MPS = (SERVE_SPEED_MPM / 60.0)
-SERVE_SPEED_PPS = (SERVE_SPEED_MPS * PIXEL_PER_METER)
+# spiker drive serve speed
+DRIVE_SERVE_SPEED_KMPH = 10.0 # Km / Hour
+DRIVE_SERVE_SPEED_MPM = (DRIVE_SERVE_SPEED_KMPH * 1000.0 / 60.0)
+DRIVE_SERVE_SPEED_MPS = (DRIVE_SERVE_SPEED_MPM / 60.0)
+DRIVE_SERVE_SPEED_PPS = (DRIVE_SERVE_SPEED_MPS * PIXEL_PER_METER)
 
-# spiker drive speed
-DRIVE_SPEED_KMPH = 35.0 # Km / Hour
-DRIVE_SPEED_MPM = (DRIVE_SPEED_KMPH * 1000.0 / 60.0)
-DRIVE_SPEED_MPS = (DRIVE_SPEED_MPM / 60.0)
-DRIVE_SPEED_PPS = (DRIVE_SPEED_MPS * PIXEL_PER_METER)
+# spiker drive hit speed
+DRIVE_HIT_SPEED_KMPH = 35.0 # Km / Hour
+DRIVE_HIT_SPEED_MPM = (DRIVE_HIT_SPEED_KMPH * 1000.0 / 60.0)
+DRIVE_HIT_SPEED_MPS = (DRIVE_HIT_SPEED_MPM / 60.0)
+DRIVE_HIT_SPEED_PPS = (DRIVE_HIT_SPEED_MPS * PIXEL_PER_METER)
 
-# spiker spike speed
-SPIKE_SPEED_KMPH = 60.0 # Km / Hour
-SPIKE_SPEED_MPM = (SPIKE_SPEED_KMPH * 1000.0 / 60.0)
-SPIKE_SPEED_MPS = (SPIKE_SPEED_MPM / 60.0)
-SPIKE_SPEED_PPS = (SPIKE_SPEED_MPS * PIXEL_PER_METER)
+# spiker spike hit speed
+SPIKE_HIT_SPEED_KMPH = 50.0 # Km / Hour
+SPIKE_HIT_SPEED_MPM = (SPIKE_HIT_SPEED_KMPH * 1000.0 / 60.0)
+SPIKE_HIT_SPEED_MPS = (SPIKE_HIT_SPEED_MPM / 60.0)
+SPIKE_HIT_SPEED_PPS = (SPIKE_HIT_SPEED_MPS * PIXEL_PER_METER)
 
 # spiker receive speed
 RECEIVE_SPEED_KMPH = 10.0 # Km / Hour
@@ -97,13 +97,12 @@ class Spiker:
             elif self.state == 'attack wait':
                 self.state = 'attack hit'
                 server.ball.start_time = get_time()
-                server.ball.speed_x = SPIKE_SPEED_PPS
-                server.ball.speed_y = -SPIKE_SPEED_PPS//2
+                server.ball.speed_x = SPIKE_HIT_SPEED_PPS
             elif self.state == 'drive serve wait':
                 self.state = 'drive serve hit'
                 server.ball.start_time = get_time()
-                server.ball.speed_x = DRIVE_SPEED_PPS
-                server.ball.speed_y = DRIVE_SPEED_PPS
+                server.ball.speed_x = DRIVE_HIT_SPEED_PPS
+                server.ball.speed_y = DRIVE_HIT_SPEED_PPS//2
 
     def is_cur_state_Idle(self):
         if self.state == 'Idle':
@@ -260,7 +259,7 @@ class Spiker:
         self.action_len = 110
         if int(self.frame) == 3:
             self.state = 'drive serve wait'
-            server.ball.speed_y = SERVE_SPEED_PPS
+            server.ball.speed_y = DRIVE_SERVE_SPEED_PPS
             server.ball.state = 'fly'
             return BehaviorTree.SUCCESS
         else:
