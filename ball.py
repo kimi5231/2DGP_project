@@ -35,7 +35,11 @@ class Ball:
     def get_bb(self):
         sx = self.x - server.background.window_left
         sy = self.y - server.background.window_bottom
-        return sx - 11, sy - 11, sx + 11, sy + 11
+
+        if self.state == 'Idle':
+            return 0, 0, 0, 0
+        else:
+            return sx - 11, sy - 11, sx + 11, sy + 11
 
     def handle_collision(self, group, other):
         if group == 'player:ball':
