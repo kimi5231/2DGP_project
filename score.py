@@ -1,5 +1,6 @@
 from pico2d import load_font
 
+import ending_mode
 import game_framework
 import lose_mode
 import server
@@ -26,7 +27,10 @@ class Score:
 
     def update(self):
         if self.player_score >= 15 and self.player_score - self.ai_score >= 2:
-            server.stage += 1
-            game_framework.change_mode(win_mode)
+            if server.stage == 5:
+                game_framework.change_mode(ending_mode)
+            else:
+                server.stage += 1
+                game_framework.change_mode(win_mode)
         elif self.ai_score >= 15 and self.ai_score - self.player_score >= 2:
             game_framework.change_mode(lose_mode)
