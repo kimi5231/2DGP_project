@@ -13,7 +13,7 @@ setter = None
 blocker1 = None
 blocker2 = None
 
-# enemy team
+# ai team
 spiker = None
 enemy_setter = None
 enemy_blocker1 = None
@@ -31,7 +31,8 @@ stage = 1
 def init_to_player_turn():
     score.turn = 'player'
 
-    player.cur_state, player.x = ServeWait, 100
+    player.state_machine.handle_event(('Change_Serve_Wait', 0))
+    player.x = 100
     setter.state, setter.x = 'Idle', 488
     blocker1.state, blocker1.x = 'Idle', 470
     blocker2.state, blocker2.x = 'Idle', 455
@@ -52,7 +53,8 @@ def init_to_player_turn():
 def init_to_ai_turn():
     score.turn = 'ai'
 
-    player.cur_state, player.x = Idle, 300
+    player.state_machine.handle_event(('Change_Idle', 0))
+    player.x = 300
     setter.state, setter.x = 'Idle', 488
     blocker1.state, blocker1.x = 'Idle', 470
     blocker2.state, blocker2.x = 'Idle', 455

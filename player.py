@@ -78,6 +78,14 @@ def time_out(e):
     return e[0] == 'TIME_OUT'
 
 
+def change_Idle(e):
+    return e[0] == 'Change_Idle'
+
+
+def change_Serve_Wait(e):
+    return e[0] == 'Change_Serve_Wait'
+
+
 class OpenAttackHit:
     @staticmethod
     def enter(player, e):
@@ -477,19 +485,19 @@ class StateMachine:
         self.player = player
         self.cur_state = ServeWait
         self.table = {
-            Idle: {right_down: Move, right_up: Move, left_down: Move, left_up: Move, space_down: ServeWait, a_down: Receive, z_down:OpenAttackReady},
-            Move: {right_down: Idle, right_up: Idle, left_down: Idle, left_up: Idle},
-            ServeWait: {right_down: DriveServeReady, left_down: SpikeServeReady, time_out: Idle},
-            DriveServeReady: {time_out: DriveServeWait},
-            DriveServeWait: {space_down: DriveServeHit, time_out: Idle},
-            DriveServeHit: {time_out: Idle},
-            SpikeServeReady: {time_out: SpikeServeWait},
-            SpikeServeWait: {space_down: SpikeServeHit, time_out: Idle},
-            SpikeServeHit: {time_out: Idle},
-            Receive: {time_out: Idle},
-            OpenAttackReady: {time_out: OpenAttackWait},
-            OpenAttackWait: {z_down: OpenAttackHit, time_out: Idle},
-            OpenAttackHit: {time_out: Idle}
+            Idle: {right_down: Move, right_up: Move, left_down: Move, left_up: Move, change_Serve_Wait: ServeWait, a_down: Receive, z_down:OpenAttackReady},
+            Move: {right_down: Idle, right_up: Idle, left_down: Idle, left_up: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},
+            ServeWait: {right_down: DriveServeReady, left_down: SpikeServeReady, time_out: Idle, change_Idle: Idle},
+            DriveServeReady: {time_out: DriveServeWait, change_Serve_Wait: ServeWait, change_Idle: Idle},
+            DriveServeWait: {space_down: DriveServeHit, time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},
+            DriveServeHit: {time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},
+            SpikeServeReady: {time_out: SpikeServeWait, change_Serve_Wait: ServeWait, change_Idle: Idle},
+            SpikeServeWait: {space_down: SpikeServeHit, time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},
+            SpikeServeHit: {time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},
+            Receive: {time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},
+            OpenAttackReady: {time_out: OpenAttackWait, change_Serve_Wait: ServeWait, change_Idle: Idle},
+            OpenAttackWait: {z_down: OpenAttackHit, time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},
+            OpenAttackHit: {time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle}
         }
 
     def start(self):
