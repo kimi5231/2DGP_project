@@ -162,7 +162,7 @@ class Spiker:
         else:
             return BehaviorTree.FAIL
 
-    def move_to_net(self, r=0.5):
+    def move_to_net(self, r=1.0):
         self.action = 1
         self.frame_num = 5
         self.frame_len = 50
