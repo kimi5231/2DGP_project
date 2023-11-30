@@ -37,9 +37,9 @@ class Judge:
         if int(self.frame) == 2 and self.state == 'score check':
             self.state = 'serve check'
             if self.team == 'player':
-                server.init_to_player_turn()
+                self.init_to_player_turn()
             else:
-                server.init_to_ai_turn()
+                self.init_to_ai_turn()
         elif int(self.frame) == 2 and self.state == 'serve check':
             self.state = 'hide'
             if self.team == 'ai' and server.spiker.state == 'serve ready':
@@ -60,3 +60,43 @@ class Judge:
         self.frame = 0
         self.action = 1
         server.ball.state = 'Idle'
+
+    def init_to_player_turn(self):
+        server.score.turn = 'player'
+
+        server.player.state_machine.handle_event(('Change_Serve_Wait', 0))
+        server.player.x = 100
+        server.setter.state, server.setter.x = 'Idle', 488
+        server.blocker1.state, server.blocker1.x = 'Idle', 470
+        server.blocker2.state, server.blocker2.x = 'Idle', 455
+
+        server.spiker.state, server.spiker.x = 'Idle', 700
+        server.enemy_setter.state, server.enemy_setter.x = 'Idle', 518
+        server.enemy_blocker1.state, server.enemy_blocker1.x = 'Idle', 536
+        server.enemy_blocker2.state, server.enemy_blocker2.x = 'Idle', 551
+
+        server.ball.x, server.ball.y = server.player.x + 10, server.player.y + 10
+
+        self.state = 'serve check'
+        self.frame = 0
+        self.action = 0
+
+    def init_to_ai_turn(self):
+        server.score.turn = 'ai'
+
+        server.player.state_machine.handle_event(('Change_Idle', 0))
+        server.player.x = 300
+        server.setter.state, server.setter.x = 'Idle', 488
+        server.blocker1.state, server.blocker1.x = 'Idle', 470
+        server.blocker2.state, server.blocker2.x = 'Idle', 455
+
+        server.spiker.state, server.spiker.x = 'serve ready', 900
+        server.enemy_setter.state, server.enemy_setter.x = 'Idle', 518
+        server.enemy_blocker1.state, server.enemy_blocker1.x = 'Idle', 536
+        server.enemy_blocker2.state, server.enemy_blocker2.x = 'Idle', 551
+
+        server.ball.x, server.ball.y = server.spiker.x - 10, server.spiker.y + 10
+
+        self.state = 'serve check'
+        self.frame = 0
+        self.action = 0
