@@ -1,8 +1,8 @@
-from pico2d import load_image, load_font, clear_canvas, update_canvas, get_events, delay
+from pico2d import load_image, clear_canvas, update_canvas, get_events, delay
 from sdl2 import SDL_QUIT, SDL_KEYDOWN, SDLK_ESCAPE
 
 import game_framework
-import title_mode
+import select_continue_mode
 
 
 def init():
@@ -27,7 +27,7 @@ def handle_events():
 
 def update():
     delay(3.0)
-    game_framework.change_mode(title_mode)
+    game_framework.change_mode(select_continue_mode)
 
 
 def draw():
