@@ -18,7 +18,7 @@ TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 
 
-class Setter:
+class Enemy_Setter:
     def __init__(self, x, y, dir):
         self.x, self.y, self.dir = x, y, dir
         self.frame = 0
@@ -34,9 +34,10 @@ class Setter:
     def draw(self):
         sx = self.x - server.background.window_left
         sy = self.y - server.background.window_bottom
-        self.image.clip_draw(int(self.frame) * self.frame_len,
-                                    self.action * self.action_len,
-                                    self.frame_len, self.action_len, sx, sy, 33, 66)
+
+        self.image.clip_composite_draw(int(self.frame) * self.frame_len,
+                                        self.action * self.action_len,
+                                        self.frame_len, self.action_len, 0, 'h', sx, sy, 33, 66)
         draw_rectangle(*self.get_bb())
 
     def update(self):
@@ -57,6 +58,7 @@ class Setter:
                 self.frame_num = 3
                 self.frame_len = 60
                 self.state = 'toss hit'
+                server.spiker.state = 'attack ready'
                 server.ball.speed_y = TOSS_SPEED_PPS
                 server.ball.speed_x = 0
                 server.ball.dir = 0

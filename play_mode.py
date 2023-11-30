@@ -7,6 +7,7 @@ from ball import Ball
 from background import Background, Player_Court, AI_Court, Player_Court_Out, AI_Court_Out, Net
 from blocker import Blocker
 from enemy_blocker import Enemy_Blocker
+from enemy_setter import Enemy_Setter
 from judge import Judge
 from player import Player
 from score import Score
@@ -33,7 +34,7 @@ def init():
     game_world.add_object(server.player, 2)
     game_world.add_collision_pair('player:ball', server.player, None)
 
-    server.setter = Setter(488, 85, 1, 'player')
+    server.setter = Setter(488, 85, 1)
     game_world.add_object(server.setter, 1)
     game_world.add_collision_pair('setter:ball', server.setter, None)
 
@@ -48,7 +49,7 @@ def init():
     game_world.add_object(server.spiker, 2)
     game_world.add_collision_pair('spiker:ball', server.spiker, None)
 
-    server.enemy_setter = Setter(518, 85, -1, 'ai')
+    server.enemy_setter = Enemy_Setter(518, 85, -1)
     game_world.add_object(server.enemy_setter, 1)
     game_world.add_collision_pair('setter:ball', server.enemy_setter, None)
 
