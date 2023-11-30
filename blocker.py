@@ -72,7 +72,7 @@ class Blocker:
         if group == 'blocker:ball':
             if self.state == 'blocking hit':
                 server.ball.speed_x = BLOCKING_SPEED_PPS
-                server.ball.speed_y = 0
+                server.ball.speed_y = BLOCKING_SPEED_PPS//2
                 server.score.turn = 'player'
                 server.ball.start_time = get_time()
 
@@ -88,6 +88,12 @@ class Blocker:
         self.frame_len = 50
         self.action_len = 110
         return BehaviorTree.RUNNING
+
+    def is_enemy_setter_toss_wait(self):
+        if server.enemy_setter.state == 'toss wait':
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
 
     def distance_less_than(self, x1, y1, x2, y2, r):
         distance2 = (x1 - x2) ** 2 + (y1 - y2) ** 2
@@ -110,11 +116,11 @@ class Blocker:
         else:
             return BehaviorTree.RUNNING
 
-    def is_ball_nearby(self, distance):
-        if self.distance_less_than(server.ball.x, server.ball.y, self.x, self.y, distance) and server.ball.y > self.y and server.score.turn == 'ai':
-            return BehaviorTree.SUCCESS
-        else:
-            return BehaviorTree.FAIL
+    # def is_ball_nearby(self, distance):
+    #     if self.distance_less_than(server.ball.x, server.ball.y, self.x, self.y, distance) and server.ball.y > self.y and server.score.turn == 'ai':
+    #         return BehaviorTree.SUCCESS
+    #     else:
+    #         return BehaviorTree.FAIL
 
     def blocking_ready(self):
         self.action = 2
@@ -170,10 +176,7 @@ class Blocker:
         self.frame_len = 50
         self.action_len = 110
         self.x += self.dir * -1 * MOVE_SPEED_PPS * game_framework.frame_time
-        if self.dir == 1 and self.x <= self.original_x and self.y <= self.original_y:
-            self.state = 'Idle'
-            return BehaviorTree.SUCCESS
-        elif self. dir == -1 and self.x >= self.original_x and self.y >= self.original_y:
+        if self.x <= self.original_x and self.y <= self.original_y:
             self.state = 'Idle'
             return BehaviorTree.SUCCESS
         else:
@@ -185,7 +188,8 @@ class Blocker:
 
         SEQ_keep_Idle_state = Sequence('Idle 상태 유지', c1, a1)
 
-        c2 = Condition('공이 근처에 있는가?', self.is_ball_nearby, 7)
+        #c2 = Condition('공이 근처에 있는가?', self.is_ball_nearby, 7)
+        c2 = Condition('상대팀이 토스를 준비 중인가?', self.is_enemy_setter_toss_wait)
         a2 = Action('blocking ready', self.blocking_ready)
 
         c5 = Condition('네트 앞으로 가야 하는가?', self.is_move_to_net)
@@ -212,12 +216,12 @@ class Blocker:
 
         SEQ_keep_come_back_state = Sequence('come back 상태 유지', c6, a6)
 
-        root = SEL_blocking_hit_or_blocking_wait_or_blocking_ready_or_come_back_Idle = Selector(
-            'blocking hit or blocking wait or blocking ready or Idle',
-            SEQ_keep_come_back_state,
+        SEL_blocking = Selector('blocking', SEQ_keep_come_back_state,
                     SEQ_keep_blocking_hit_state,
                     SEQ_keep_blocking_wait_state,
-                    SEL_move_to_net_front_or_change_blocking_ready_state,
-                    SEQ_keep_Idle_state)
+                    SEL_move_to_net_front_or_change_blocking_ready_state,)
+
+        root = SEL_blocking_or_Idle = Selector('blocking or Idle', SEL_blocking,
+                                               SEQ_keep_Idle_state)
 
         self.bt = BehaviorTree(root)
