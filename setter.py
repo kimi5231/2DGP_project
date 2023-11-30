@@ -1,8 +1,6 @@
 from pico2d import load_image, draw_rectangle, get_time
 
 import game_framework
-import game_world
-import play_mode
 import server
 from behavior_tree import BehaviorTree, Action, Condition, Sequence, Selector
 
@@ -12,6 +10,12 @@ TOSS_SPEED_KMPH = 20.0 # Km / Hour
 TOSS_SPEED_MPM = (TOSS_SPEED_KMPH * 1000.0 / 60.0)
 TOSS_SPEED_MPS = (TOSS_SPEED_MPM / 60.0)
 TOSS_SPEED_PPS = (TOSS_SPEED_MPS * PIXEL_PER_METER)
+
+# setter feint speed
+FEINT_SPEED_KMPH = 10.0 # Km / Hour
+FEINT_SPEED_MPM = (FEINT_SPEED_KMPH * 1000.0 / 60.0)
+FEINT_SPEED_MPS = (FEINT_SPEED_MPM / 60.0)
+FEINT_SPEED_PPS = (FEINT_SPEED_MPS * PIXEL_PER_METER)
 
 # setter action speed
 TIME_PER_ACTION = 0.5
@@ -60,6 +64,16 @@ class Setter:
                 server.ball.speed_y = TOSS_SPEED_PPS
                 server.ball.speed_x = 0
                 server.ball.dir = 0
+                server.ball.start_time = get_time()
+            elif self.state == 'feint wait':
+                self.action = 3
+                self.frame_num = 3
+                self.frame_len = 60
+                self.state = 'feint hit'
+                server.ball.speed_y = -FEINT_SPEED_PPS
+                server.ball.speed_x = FEINT_SPEED_PPS
+                server.ball.y = 200 # 수정
+                server.ball.dir = 1
                 server.ball.start_time = get_time()
 
     def is_cur_state_Idle(self):
@@ -119,6 +133,34 @@ class Setter:
         else:
             return BehaviorTree.RUNNING
 
+    def is_cur_state_feint_wait(self):
+        if self.state == 'feint wait':
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    def feint_wait(self):
+        self.action = 2
+        self.frame_num = 1
+        self.frame_len = 60
+        return BehaviorTree.RUNNING
+
+    def is_cur_state_feint_hit(self):
+        if self.state == 'feint hit':
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    def feint_hit(self):
+        self.action = 3
+        self.frame_num = 4
+        self.frame_len = 60
+        if int(self.frame) == 3:
+            self.state = 'Idle'
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
+
     def build_behavior_tree(self):
         c1 = Condition('현재 상태가 Idle 인가?', self.is_cur_state_Idle)
         a1 = Action('Idle', self.Idle)
@@ -143,6 +185,19 @@ class Setter:
         SEL_toss = Selector('toss', SEQ_chang_toss_hit_state, SEQ_keep_toss_wait_state,
                                                 SEQ_change_toss_ready_state)
 
-        root = SEL_toss_or_Idle = Selector('toss or Idle',SEL_toss, SEQ_keep_Idle_state)
+        c5 = Condition('현재 상태가 feint wait 인가?', self.is_cur_state_feint_wait)
+        a5 = Action('feint wait', self.feint_wait)
+
+        SEQ_keep_feint_wait_state = Sequence('feint wait 상태 유지', c5, a5)
+
+        c6 = Condition('현재 상태가 feint hit 인가?', self.is_cur_state_feint_hit)
+        a6 = Action('feint hit', self.feint_hit)
+
+        SEQ_chang_feint_hit_state = Sequence('feint hit 상태로 변경', c6, a6)
+
+        SEL_feint = Selector('feint', SEQ_chang_feint_hit_state, SEQ_keep_feint_wait_state)
+
+        root = SEL_feint_toss_or_Idle = Selector('feint or toss or Idle',
+                                                 SEL_feint, SEL_toss, SEQ_keep_Idle_state)
 
         self.bt = BehaviorTree(root)

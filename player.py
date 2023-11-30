@@ -1,5 +1,5 @@
 from pico2d import load_image, get_time, draw_rectangle
-from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_SPACE, SDLK_a, SDLK_z, SDLK_x
+from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_SPACE, SDLK_a, SDLK_z, SDLK_x, SDLK_c
 
 import random
 import game_framework
@@ -79,6 +79,10 @@ def x_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_x
 
 
+def c_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_c
+
+
 def time_out(e):
     return e[0] == 'TIME_OUT'
 
@@ -89,6 +93,39 @@ def change_Idle(e):
 
 def change_Serve_Wait(e):
     return e[0] == 'Change_Serve_Wait'
+
+
+class FeintSetterWait:
+    @staticmethod
+    def enter(player, e):
+        player.frame = 0
+        player.action = 0
+        player.frame_num = 1
+        player.frame_len = 50
+        player.action_len = 110
+        player.start_time = get_time()
+        server.setter.state = 'feint wait'
+
+    @staticmethod
+    def exit(player, e):
+        pass
+
+    @staticmethod
+    def do(player):
+        player.frame = ((player.frame + player.frame_num * ACTION_PER_TIME * game_framework.frame_time)
+                        % player.frame_num)
+        if get_time() - player.start_time > 0.5:
+            player.state_machine.handle_event(('TIME_OUT', 0))
+
+
+
+    @staticmethod
+    def draw(player): # player 그리기
+        sx = player.x - server.background.window_left
+        sy = player.y - server.background.window_bottom
+        player.image_110.clip_draw(int(player.frame) * player.frame_len,
+                                   player.action * player.action_len,
+                                   player.frame_len, player.action_len, sx, sy, 33, 66)
 
 
 class TimeDifferenceAttackHit:
@@ -615,9 +652,9 @@ class Idle:
 class StateMachine:
     def __init__(self, player):
         self.player = player
-        self.cur_state = ServeWait
+        self.cur_state = Idle
         self.table = {
-            Idle: {right_down: Move, right_up: Move, left_down: Move, left_up: Move, change_Serve_Wait: ServeWait, a_down: Receive, z_down: AttackReady, x_down: TimeDifferenceAttackBlockerReady},
+            Idle: {right_down: Move, right_up: Move, left_down: Move, left_up: Move, change_Serve_Wait: ServeWait, a_down: Receive, z_down: AttackReady, x_down: TimeDifferenceAttackBlockerReady, c_down: FeintSetterWait},
             Move: {right_down: Idle, right_up: Idle, left_down: Idle, left_up: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},
             ServeWait: {right_down: DriveServeReady, left_down: SpikeServeReady, time_out: Idle, change_Idle: Idle},
             DriveServeReady: {time_out: DriveServeWait, change_Serve_Wait: ServeWait, change_Idle: Idle},
@@ -633,7 +670,8 @@ class StateMachine:
             TimeDifferenceAttackBlockerReady: {time_out: TimeDifferenceAttackReady, change_Serve_Wait: ServeWait, change_Idle: Idle},
             TimeDifferenceAttackReady: {time_out: TimeDifferenceAttackWait, change_Serve_Wait: ServeWait, change_Idle: Idle},
             TimeDifferenceAttackWait: {x_down: TimeDifferenceAttackHit, time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},
-            TimeDifferenceAttackHit: {time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle}
+            TimeDifferenceAttackHit: {time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},
+            FeintSetterWait: {time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle}
         }
 
     def start(self):
