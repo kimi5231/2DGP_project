@@ -34,6 +34,7 @@ class Blocker:
         self.action_len = 110
         self.image_110 = load_image('blocker_h110.png')
         self.image_180 = load_image('blocker_h180.png')
+        self.image_210 = load_image('blocker_h210.png')
         self.build_behavior_tree()
         self.state = 'Idle'
 
@@ -44,10 +45,14 @@ class Blocker:
             self.image_110.clip_draw(int(self.frame) * self.frame_len,
                                        self.action * self.action_len,
                                        self.frame_len, self.action_len, sx, sy, 33, 66)
-        else:
+        elif self.action_len == 180:
             self.image_180.clip_draw(int(self.frame) * self.frame_len,
                                      self.action * self.action_len,
-                                     self.frame_len, self.action_len, sx, sy+20, 36, 86)
+                                     self.frame_len, self.action_len, sx, sy + 20, 36, 86)
+        else:
+            self.image_210.clip_draw(int(self.frame) * self.frame_len,
+                                     self.action * self.action_len,
+                                     self.frame_len, self.action_len, sx, sy + 20, 50, 100)
         draw_rectangle(*self.get_bb())
 
     def update(self):
@@ -116,12 +121,6 @@ class Blocker:
         else:
             return BehaviorTree.RUNNING
 
-    # def is_ball_nearby(self, distance):
-    #     if self.distance_less_than(server.ball.x, server.ball.y, self.x, self.y, distance) and server.ball.y > self.y and server.score.turn == 'ai':
-    #         return BehaviorTree.SUCCESS
-    #     else:
-    #         return BehaviorTree.FAIL
-
     def blocking_ready(self):
         self.action = 2
         self.frame_num = 2
@@ -170,7 +169,7 @@ class Blocker:
         else:
             return BehaviorTree.FAIL
 
-    def come_back(self, r=0.5):
+    def come_back(self):
         self.action = 1
         self.frame_num = 5
         self.frame_len = 50
@@ -182,13 +181,31 @@ class Blocker:
         else:
             return BehaviorTree.RUNNING
 
+    def is_cur_state_time_difference_attack(self):
+        if self.state == 'time difference attack':
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    def time_difference_attack(self):
+        self.action = 0
+        self.frame_num = 12
+        self.frame_len = 80
+        self.action_len = 210
+        if self.x <= server.net.x - 10:
+            self.x += self.dir * MOVE_SPEED_PPS * game_framework.frame_time
+        if int(self.frame) == 11:
+            self.state = 'come back'
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
+
     def build_behavior_tree(self):
         c1 = Condition('현재 상태가 Idle 인가?', self.is_cur_state_Idle)
         a1 = Action('Idle', self.Idle)
 
         SEQ_keep_Idle_state = Sequence('Idle 상태 유지', c1, a1)
 
-        #c2 = Condition('공이 근처에 있는가?', self.is_ball_nearby, 7)
         c2 = Condition('상대팀이 토스를 준비 중인가?', self.is_enemy_setter_toss_wait)
         a2 = Action('blocking ready', self.blocking_ready)
 
@@ -221,7 +238,14 @@ class Blocker:
                     SEQ_keep_blocking_wait_state,
                     SEL_move_to_net_front_or_change_blocking_ready_state,)
 
-        root = SEL_blocking_or_Idle = Selector('blocking or Idle', SEL_blocking,
+        c7 = Condition('현재 상태가 time difference attack 인가?', self.is_cur_state_time_difference_attack)
+        a7 = Action('시간차 공격', self.time_difference_attack)
+
+        SEQ_time_difference_attack = Sequence('time difference attack', c7, a7)
+
+        root = SEL_blocking_or_Idle = Selector('time difference attack or blocking or Idle',
+                                               SEQ_time_difference_attack,
+                                               SEL_blocking,
                                                SEQ_keep_Idle_state)
 
         self.bt = BehaviorTree(root)

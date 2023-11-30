@@ -4,7 +4,7 @@ from sdl2 import SDL_KEYDOWN, SDLK_s
 import game_framework
 import server
 from behavior_tree import BehaviorTree, Condition, Action, Sequence, Selector
-from player import OpenAttackWait
+from player import AttackWait, TimeDifferenceAttackBlockerReady
 
 # blocker move speed
 PIXEL_PER_METER = (10.0 / 0.3) # 10 pixel 30 cm
@@ -138,7 +138,7 @@ class Enemy_Blocker:
         return BehaviorTree.RUNNING
 
     def is_enemy_spiker_ready(self):
-        if server.player.state_machine.cur_state == OpenAttackWait:
+        if server.player.state_machine.cur_state == AttackWait or server.player.state_machine.cur_state == TimeDifferenceAttackBlockerReady:
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL

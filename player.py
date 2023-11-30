@@ -1,6 +1,7 @@
-from pico2d import load_image, get_time, delay, draw_rectangle, clamp
-from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_SPACE, SDLK_a, SDLK_z
+from pico2d import load_image, get_time, draw_rectangle
+from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_SPACE, SDLK_a, SDLK_z, SDLK_x
 
+import random
 import game_framework
 import server
 
@@ -74,6 +75,10 @@ def z_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_z
 
 
+def x_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_x
+
+
 def time_out(e):
     return e[0] == 'TIME_OUT'
 
@@ -86,7 +91,7 @@ def change_Serve_Wait(e):
     return e[0] == 'Change_Serve_Wait'
 
 
-class OpenAttackHit:
+class TimeDifferenceAttackHit:
     @staticmethod
     def enter(player, e):
         player.frame = 0
@@ -115,7 +120,7 @@ class OpenAttackHit:
                                    player.frame_len, player.action_len, sx, sy + 33, 50, 100)
 
 
-class OpenAttackWait:
+class TimeDifferenceAttackWait:
     @staticmethod
     def enter(player, e):
         player.frame = 0
@@ -146,7 +151,134 @@ class OpenAttackWait:
                                    player.frame_len, player.action_len, sx, sy + 33, 50, 100)
 
 
-class OpenAttackReady:
+class TimeDifferenceAttackReady:
+    @staticmethod
+    def enter(player, e):
+        player.frame = 0
+        player.action = 3
+        player.frame_num = 7
+        player.frame_len = 80
+        player.action_len = 210
+
+    @staticmethod
+    def exit(player, e):
+        pass
+
+    @staticmethod
+    def do(player):
+        if int(player.frame) == 6:
+            player.state_machine.handle_event(('TIME_OUT', 0))
+        player.frame = ((player.frame + player.frame_num * ACTION_PER_TIME * game_framework.frame_time)
+                        % player.frame_num)
+
+    @staticmethod
+    def draw(player):
+        sx = player.x - server.background.window_left
+        sy = player.y - server.background.window_bottom
+        player.image_210.clip_draw(int(player.frame) * player.frame_len,
+                                   player.action * player.action_len,
+                                   player.frame_len, player.action_len, sx, sy+20, 50, 100)
+
+
+class TimeDifferenceAttackBlockerReady:
+    @staticmethod
+    def enter(player, e):
+        player.frame = 0
+        player.action = 0
+        player.frame_num = 1
+        player.frame_len = 50
+        player.action_len = 110
+        player.start_time = get_time()
+        num = random.randint(1, 2)
+        if num == 1:
+            server.blocker1.state = 'time difference attack'
+        else:
+            server.blocker2.state = 'time difference attack'
+
+
+    @staticmethod
+    def exit(player, e):
+        pass
+
+    @staticmethod
+    def do(player):
+        player.frame = ((player.frame + player.frame_num * ACTION_PER_TIME * game_framework.frame_time)
+                        % player.frame_num)
+        if get_time() - player.start_time > 0.5:
+            player.state_machine.handle_event(('TIME_OUT', 0))
+
+
+
+    @staticmethod
+    def draw(player): # player 그리기
+        sx = player.x - server.background.window_left
+        sy = player.y - server.background.window_bottom
+        player.image_110.clip_draw(int(player.frame) * player.frame_len,
+                                   player.action * player.action_len,
+                                   player.frame_len, player.action_len, sx, sy, 33, 66)
+
+
+class AttackHit:
+    @staticmethod
+    def enter(player, e):
+        player.frame = 0
+        player.action = 5
+        player.frame_num = 6
+        player.frame_len = 80
+        player.action_len = 210
+
+    @staticmethod
+    def exit(player, e):
+        pass
+
+    @staticmethod
+    def do(player):
+        if int(player.frame) == 5:
+            player.state_machine.handle_event(('TIME_OUT', 0))
+        player.frame = ((player.frame + player.frame_num * ACTION_PER_TIME * game_framework.frame_time)
+                        % player.frame_num)
+
+    @staticmethod
+    def draw(player):
+        sx = player.x - server.background.window_left
+        sy = player.y - server.background.window_bottom
+        player.image_210.clip_draw(int(player.frame) * player.frame_len,
+                                   player.action * player.action_len,
+                                   player.frame_len, player.action_len, sx, sy + 33, 50, 100)
+
+
+class AttackWait:
+    @staticmethod
+    def enter(player, e):
+        player.frame = 0
+        player.action = 4
+        player.frame_num = 1
+        player.frame_len = 80
+        player.action_len = 210
+        player.start_time = get_time()
+
+    @staticmethod
+    def exit(player, e):
+        pass
+
+    @staticmethod
+    def do(player):
+        player.frame = ((player.frame + player.frame_num * ACTION_PER_TIME * game_framework.frame_time)
+                        % player.frame_num)
+        if get_time() - player.start_time > 1.5:
+            player.state_machine.handle_event(('TIME_OUT', 0))
+
+
+    @staticmethod
+    def draw(player):
+        sx = player.x - server.background.window_left
+        sy = player.y - server.background.window_bottom
+        player.image_210.clip_draw(int(player.frame) * player.frame_len,
+                                   player.action * player.action_len,
+                                   player.frame_len, player.action_len, sx, sy + 33, 50, 100)
+
+
+class AttackReady:
     @staticmethod
     def enter(player, e):
         player.frame = 0
@@ -485,7 +617,7 @@ class StateMachine:
         self.player = player
         self.cur_state = ServeWait
         self.table = {
-            Idle: {right_down: Move, right_up: Move, left_down: Move, left_up: Move, change_Serve_Wait: ServeWait, a_down: Receive, z_down:OpenAttackReady},
+            Idle: {right_down: Move, right_up: Move, left_down: Move, left_up: Move, change_Serve_Wait: ServeWait, a_down: Receive, z_down: AttackReady, x_down: TimeDifferenceAttackBlockerReady},
             Move: {right_down: Idle, right_up: Idle, left_down: Idle, left_up: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},
             ServeWait: {right_down: DriveServeReady, left_down: SpikeServeReady, time_out: Idle, change_Idle: Idle},
             DriveServeReady: {time_out: DriveServeWait, change_Serve_Wait: ServeWait, change_Idle: Idle},
@@ -495,9 +627,13 @@ class StateMachine:
             SpikeServeWait: {space_down: SpikeServeHit, time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},
             SpikeServeHit: {time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},
             Receive: {time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},
-            OpenAttackReady: {time_out: OpenAttackWait, change_Serve_Wait: ServeWait, change_Idle: Idle},
-            OpenAttackWait: {z_down: OpenAttackHit, time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},
-            OpenAttackHit: {time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle}
+            AttackReady: {time_out: AttackWait, change_Serve_Wait: ServeWait, change_Idle: Idle},
+            AttackWait: {z_down: AttackHit, time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},
+            AttackHit: {time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},
+            TimeDifferenceAttackBlockerReady: {time_out: TimeDifferenceAttackReady, change_Serve_Wait: ServeWait, change_Idle: Idle},
+            TimeDifferenceAttackReady: {time_out: TimeDifferenceAttackWait, change_Serve_Wait: ServeWait, change_Idle: Idle},
+            TimeDifferenceAttackWait: {x_down: TimeDifferenceAttackHit, time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},
+            TimeDifferenceAttackHit: {time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle}
         }
 
     def start(self):
@@ -554,7 +690,7 @@ class Player:
             return sx + 5, sy - 5, sx + 15, sy + 5
         elif self.state_machine.cur_state == SpikeServeHit:
             return sx, sy + 70, sx + 10, sy + 80
-        elif self.state_machine.cur_state == OpenAttackHit:
+        elif self.state_machine.cur_state == AttackHit or self.state_machine.cur_state == TimeDifferenceAttackHit:
             return sx, sy + 70, sx + 10, sy + 80
         else:
             return 0, 0, 0, 0
@@ -574,5 +710,5 @@ class Player:
             elif self.state_machine.cur_state == SpikeServeHit:
                 server.ball.speed_x = SPIKE_HIT_SPEED_PPS
                 server.ball.speed_y = SPIKE_SERVE_SPEED_PPS
-            elif self.state_machine.cur_state == OpenAttackHit:
+            elif self.state_machine.cur_state == AttackHit and self.state_machine.cur_state == TimeDifferenceAttackHit:
                 server.ball.speed_x = SPIKE_HIT_SPEED_PPS
