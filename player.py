@@ -652,7 +652,7 @@ class Idle:
 class StateMachine:
     def __init__(self, player):
         self.player = player
-        self.cur_state = Idle
+        self.cur_state = ServeWait
         self.table = {
             Idle: {right_down: Move, right_up: Move, left_down: Move, left_up: Move, change_Serve_Wait: ServeWait, a_down: Receive, z_down: AttackReady, x_down: TimeDifferenceAttackBlockerReady, c_down: FeintSetterWait},
             Move: {right_down: Idle, right_up: Idle, left_down: Idle, left_up: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},

@@ -1,5 +1,4 @@
 from pico2d import load_image, get_time
-from sdl2 import SDL_KEYDOWN, SDLK_s
 
 import game_framework
 import server
@@ -35,6 +34,7 @@ class Enemy_Blocker:
         self.action_len = 110
         self.image_110 = load_image('blocker_h110.png')
         self.image_180 = load_image('blocker_h180.png')
+        self.image_210 = load_image('blocker_h210.png')
         self.build_behavior_tree()
         self.state = 'Idle'
 
@@ -49,7 +49,10 @@ class Enemy_Blocker:
             self.image_180.clip_composite_draw(int(self.frame) * self.frame_len,
                                      self.action * self.action_len,
                                      self.frame_len, self.action_len, 0, 'h', sx, sy + 20, 36, 86)
-
+        else:
+            self.image_210.clip_composite_draw(int(self.frame) * self.frame_len,
+                                               self.action * self.action_len,
+                                               self.frame_len, self.action_len, 0, 'h', sx, sy + 20, 50, 100)
     def update(self):
         self.frame = ((self.frame + self.frame_num * ACTION_PER_TIME * game_framework.frame_time)
                         % self.frame_num)

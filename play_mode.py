@@ -60,7 +60,7 @@ def init():
     game_world.add_collision_pair('enemy_blocker:ball', server.enemy_blocker1, None)
     game_world.add_collision_pair('enemy_blocker:ball', server.enemy_blocker2, None)
 
-    server.ball = Ball(server.setter.x-10, server.setter.y+100, 0, 0, 0)
+    server.ball = Ball(server.player.x+10, server.player.y+10, 0, 0, 0)
     game_world.add_object(server.ball, 2)
     game_world.add_collision_pair('player:ball', None, server.ball)
     game_world.add_collision_pair('setter:ball', None, server.ball)

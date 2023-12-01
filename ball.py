@@ -12,7 +12,7 @@ Gravity_SPEED_PPS = (Gravity_SPEED_MPSS * PIXEL_PER_METER)
 class Ball:
     def __init__(self, x, y, dir, speed_x, speed_y):
         self.x, self.y, self.dir, self.speed_x, self.speed_y = x, y, dir, speed_x, speed_y
-        self.state = 'fly'
+        self.state = 'Idle'
         self.image = load_image('ball.png')
         self.start_time = 0.0
 
