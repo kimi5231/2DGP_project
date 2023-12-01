@@ -26,6 +26,9 @@ class Score:
         self.font.draw(260, 550, f'{self.player_score} : {self.ai_score}', (255, 255, 255))
 
     def update(self):
+        self.check_score()
+
+    def check_score(self):
         if self.player_score >= 15 and self.player_score - self.ai_score >= 2:
             if server.stage == 5:
                 game_framework.change_mode(ending_mode)
@@ -34,3 +37,15 @@ class Score:
                 game_framework.change_mode(win_mode)
         elif self.ai_score >= 15 and self.ai_score - self.player_score >= 2:
             game_framework.change_mode(lose_mode)
+
+    def time_over(self):
+        if self.player_score > self.ai_score:
+            if server.stage == 5:
+                game_framework.change_mode(ending_mode)
+            else:
+                server.stage += 1
+                game_framework.change_mode(win_mode)
+        elif self.ai_score > self.player_score:
+            game_framework.change_mode(lose_mode)
+        elif self.player_score == self.ai_score:
+            server.timer.sec += 30
