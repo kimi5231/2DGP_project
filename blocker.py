@@ -243,9 +243,8 @@ class Blocker:
 
         SEQ_time_difference_attack = Sequence('time difference attack', c7, a7)
 
-        root = SEL_blocking_or_Idle = Selector('time difference attack or blocking or Idle',
-                                               SEQ_time_difference_attack,
-                                               SEL_blocking,
-                                               SEQ_keep_Idle_state)
+        root = SEL_time_difference_attack_blocking_or_Idle = Selector(
+                            'time difference attack or blocking or Idle',
+                            SEQ_time_difference_attack, SEL_blocking, SEQ_keep_Idle_state)
 
         self.bt = BehaviorTree(root)

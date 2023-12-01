@@ -175,6 +175,26 @@ class Enemy_Blocker:
         else:
             return BehaviorTree.RUNNING
 
+    def is_cur_state_time_difference_attack(self):
+        if self.state == 'time difference attack':
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    def time_difference_attack(self):
+        self.action = 0
+        self.frame_num = 12
+        self.frame_len = 80
+        self.action_len = 210
+        if self.x >= server.net.x + 10:
+            self.x += self.dir * MOVE_SPEED_PPS * game_framework.frame_time
+        if int(self.frame) == 11:
+            self.state = 'come back'
+            server.spiker.state = 'attack ready'
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
+
     def build_behavior_tree(self):
         c1 = Condition('현재 상태가 Idle 인가?', self.is_cur_state_Idle)
         a1 = Action('Idle', self.Idle)
@@ -214,7 +234,13 @@ class Enemy_Blocker:
                     SEQ_keep_blocking_wait_state,
                     SEL_move_to_net_front_or_change_blocking_ready_state,)
 
-        root = SEL_blocking_or_Idle = Selector('blocking or Idle', SEL_blocking,
-                                               SEQ_keep_Idle_state)
+        c7 = Condition('현재 상태가 time difference attack 인가?', self.is_cur_state_time_difference_attack)
+        a7 = Action('시간차 공격', self.time_difference_attack)
+
+        SEQ_time_difference_attack = Sequence('time difference attack', c7, a7)
+
+        root = SEL_time_difference_attack_blocking_or_Idle = Selector(
+            'time difference attack or blocking or Idle',
+                    SEQ_time_difference_attack, SEL_blocking, SEQ_keep_Idle_state)
 
         self.bt = BehaviorTree(root)

@@ -65,12 +65,18 @@ class Enemy_Setter:
     def handle_collision(self, group, other):
         if group == 'setter:ball':
             if self.state == 'toss wait' or self.state == 'toss ready':
+                num = random.randint(1, 5)
+                if num == 1:
+                    server.enemy_blocker1.state = 'time difference attack'
+                elif num == 2:
+                    server.enemy_blocker2.state = 'time difference attack'
+                else:
+                    server.spiker.state = 'attack ready'
                 self.action = 3
                 self.frame_num = 3
                 self.frame_len = 60
                 self.action_len = 110
                 self.state = 'toss hit'
-                server.spiker.state = 'attack ready'
                 server.ball.speed_y = TOSS_SPEED_PPS
                 server.ball.speed_x = 0
                 server.ball.dir = 0
@@ -113,7 +119,7 @@ class Enemy_Setter:
         self.frame_len = 60
         self.action_len = 110
         if int(self.frame) == 6:
-            num = random.randint(1, 3)
+            num = random.randint(1, 5)
             if num == 1:
                 self.state = 'feint wait'
             else:
