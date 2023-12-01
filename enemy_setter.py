@@ -26,7 +26,7 @@ class Enemy_Setter:
         self.frame_num = 1
         self.frame_len = 50
         self.action_len = 110
-        self.image = load_image('setter.png')
+        self.image_110 = load_image('setter_h110.png')
         self.build_behavior_tree()
         self.state = 'Idle'
         self.receive_success = False
@@ -35,9 +35,9 @@ class Enemy_Setter:
         sx = self.x - server.background.window_left
         sy = self.y - server.background.window_bottom
 
-        self.image.clip_composite_draw(int(self.frame) * self.frame_len,
-                                        self.action * self.action_len,
-                                        self.frame_len, self.action_len, 0, 'h', sx, sy, 33, 66)
+        self.image_110.clip_composite_draw(int(self.frame) * self.frame_len,
+                                           self.action * self.action_len,
+                                           self.frame_len, self.action_len, 0, 'h', sx, sy, 33, 66)
         draw_rectangle(*self.get_bb())
 
     def update(self):

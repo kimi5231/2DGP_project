@@ -1,0 +1,1 @@
+action 0 (timedifference attack) : w 60, h 180, frame 9
