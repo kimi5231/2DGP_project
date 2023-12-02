@@ -163,7 +163,7 @@ class Enemy_Blocker:
         else:
             return BehaviorTree.FAIL
 
-    def come_back(self, r=0.5):
+    def come_back(self):
         self.action = 1
         self.frame_num = 5
         self.frame_len = 50
