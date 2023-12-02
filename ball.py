@@ -1,4 +1,4 @@
-from pico2d import load_image, get_time, draw_rectangle, clamp
+from pico2d import load_image, get_time, draw_rectangle, clamp, load_wav
 
 import game_framework
 import server
@@ -15,6 +15,7 @@ class Ball:
         self.state = 'Idle'
         self.image = load_image('ball.png')
         self.start_time = 0.0
+        self.sound = load_wav('ball_sound.wav')
 
     def draw(self):
         sx = self.x - server.background.window_left
@@ -37,25 +38,37 @@ class Ball:
         sy = self.y - server.background.window_bottom
 
         if self.state == 'Idle':
-            return 0, 0, 0, 0
+            return -1, -1, -1, -1
         else:
             return sx - 11, sy - 11, sx + 11, sy + 11
 
     def handle_collision(self, group, other):
         if group == 'player:ball':
             self.dir = 1
-        # if group == 'setter:ball':
-        #     self.dir = 0
+            self.sound.set_volume(32)
+            self.sound.play()
+        if group == 'setter:ball':
+            self.sound.set_volume(10)
+            self.sound.play()
+            pass
         if group == 'blocker:ball':
             self.dir = 1
+            self.sound.set_volume(20)
+            self.sound.play()
         if group == 'spiker:ball':
             self.dir = -1
+            self.sound.set_volume(32)
+            self.sound.play()
         if group == 'enemy_blocker:ball':
             self.dir = -1
+            self.sound.set_volume(20)
+            self.sound.play()
         if group == 'player_court:ball' or group == 'ai_court_out:ball' or group == 'ai_court:ball' or group == 'player_court_out:ball':
             self.state = 'Idle'
             self.dir = 0
             self.speed_x = 0
             self.speed_y = 0
+            self.sound.set_volume(10)
+            self.sound.play()
         if group == 'net:ball':
             self.dir *= -1
