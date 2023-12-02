@@ -1,0 +1,44 @@
+# 메인 파일 이름을 지정하세요.
+main_file = 'main.py'
+
+# 데이타 파일들을 지정하세요.
+data_files = [
+    'background.png',
+    'ball.png',
+    'ball_sound.wav',
+    'blocker_h110.png',
+    'blocker_h180.png',
+    'blocker_h210.png',
+    'China.png',
+    'court.png',
+    'Cuba.png',
+    'ENCR10B.TTF',
+    'ending1.png',
+    'ending2.png',
+    'Japan.png',
+    'judge.png',
+    'Korea.png',
+    'lose.png',
+    'lose_music.mp3',
+    'match_background.jpg',
+    'match_music.mp3',
+    'net.png',
+    'play_music.mp3',
+    'player_h110.png',
+    'player_h210.png',
+    'select_continue.png',
+    'setter_h110.png',
+    'setter_h180.png',
+    'title.png',
+    'title_music.mp3',
+    'URS.png',
+    'USA.png',
+    'win.png',
+    'win_music.mp3'
+]
+
+# 데이타가 들어있는 폴더들을 지정하세요.
+data_folders = [
+
+]
+
