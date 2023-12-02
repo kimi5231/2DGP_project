@@ -780,7 +780,7 @@ class Player:
                 server.setter.receive_success = True
                 server.ball.start_time = get_time()
                 server.ball.speed_x = RECEIVE_SPEED_PPS
-                server.ball.speed_y = RECEIVE_SPEED_PPS
+                server.ball.speed_y = RECEIVE_SPEED_PPS//2
             elif self.state_machine.cur_state == DriveServeHit:
                 server.ball.start_time = get_time()
                 server.ball.speed_x = DRIVE_HIT_SPEED_PPS

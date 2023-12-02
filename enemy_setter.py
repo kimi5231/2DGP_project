@@ -60,7 +60,10 @@ class Enemy_Setter:
         sx = self.x - server.background.window_left
         sy = self.y - server.background.window_bottom
 
-        return sx - 10, sy + 10, sx + 10, sy + 20
+        if self.state == 'toss wait' or self.state == 'toss ready' or self.state == 'feint wait':
+            return sx - 10, sy + 10, sx + 10, sy + 20
+        else:
+            return 0, 0, 0, 0
 
     def handle_collision(self, group, other):
         if group == 'setter:ball':
