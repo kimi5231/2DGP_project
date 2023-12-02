@@ -1,4 +1,4 @@
-from pico2d import load_image, get_time, draw_rectangle
+from pico2d import load_image, get_time, draw_rectangle, load_font
 from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_SPACE, SDLK_a, SDLK_z, SDLK_x, SDLK_c
 
 import random
@@ -91,7 +91,7 @@ def change_Idle(e):
     return e[0] == 'Change_Idle'
 
 
-def change_Serve_Wait(e):
+def change_Judge_Wait(e):
     return e[0] == 'Change_Serve_Wait'
 
 
@@ -566,6 +566,9 @@ class ServeWait:
         player.frame_len = 70
         player.action_len = 110
         player.start_time = get_time()
+        player.check_time = get_time()
+        player.wait_sec = 3
+        player.font = load_font('ENCR10B.TTF')
 
     @staticmethod
     def exit(player, e): # ServeWait 상태에서 나올 때 할 것
@@ -575,12 +578,48 @@ class ServeWait:
     def do(player): # ServeWait 상태인 동안 할 것
         player.frame = ((player.frame + player.frame_num * ACTION_PER_TIME * game_framework.frame_time)
                         % player.frame_num)
-        if get_time() - player.start_time > 3:
+        if get_time() - player.check_time > 1.0:
+            player.check_time = get_time()
+            player.wait_sec -= 1
+        if get_time() - player.start_time > 3.0:
+            server.judge.check_score_ai()
+            server.score.ai_score += 1
             player.state_machine.handle_event(('TIME_OUT', 0))
 
 
     @staticmethod
     def draw(player): # player 그리기
+        sx = player.x - server.background.window_left
+        sy = player.y - server.background.window_bottom
+        player.image_110.clip_draw(int(player.frame) * player.frame_len,
+                                   player.action * player.action_len,
+                                   player.frame_len, player.action_len, sx, sy, 40, 66)
+        player.font.draw(150, 150, f'{int(player.wait_sec)}', (255, 255, 255))
+
+
+class JudgeWait:
+    @staticmethod
+    def enter(player, e):
+        player.frame = 0
+        player.action = 2
+        player.frame_num = 1
+        player.frame_len = 70
+        player.action_len = 110
+
+    @staticmethod
+    def exit(player, e):
+        pass
+
+    @staticmethod
+    def do(player):
+        player.frame = ((player.frame + player.frame_num * ACTION_PER_TIME * game_framework.frame_time)
+                        % player.frame_num)
+        if server.judge.state == 'hide':
+            player.state_machine.handle_event(('TIME_OUT', 0))
+
+
+    @staticmethod
+    def draw(player):
         sx = player.x - server.background.window_left
         sy = player.y - server.background.window_bottom
         player.image_110.clip_draw(int(player.frame) * player.frame_len,
@@ -652,26 +691,27 @@ class Idle:
 class StateMachine:
     def __init__(self, player):
         self.player = player
-        self.cur_state = ServeWait
+        self.cur_state = JudgeWait
         self.table = {
-            Idle: {right_down: Move, right_up: Move, left_down: Move, left_up: Move, change_Serve_Wait: ServeWait, a_down: Receive, z_down: AttackReady, x_down: TimeDifferenceAttackBlockerReady, c_down: FeintSetterWait},
-            Move: {right_down: Idle, right_up: Idle, left_down: Idle, left_up: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},
-            ServeWait: {right_down: DriveServeReady, left_down: SpikeServeReady, time_out: Idle, change_Idle: Idle},
-            DriveServeReady: {time_out: DriveServeWait, change_Serve_Wait: ServeWait, change_Idle: Idle},
-            DriveServeWait: {space_down: DriveServeHit, time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},
-            DriveServeHit: {time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},
-            SpikeServeReady: {time_out: SpikeServeWait, change_Serve_Wait: ServeWait, change_Idle: Idle},
-            SpikeServeWait: {space_down: SpikeServeHit, time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},
-            SpikeServeHit: {time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},
-            Receive: {time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},
-            AttackReady: {time_out: AttackWait, change_Serve_Wait: ServeWait, change_Idle: Idle},
-            AttackWait: {z_down: AttackHit, time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},
-            AttackHit: {time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},
-            TimeDifferenceAttackBlockerReady: {time_out: TimeDifferenceAttackReady, change_Serve_Wait: ServeWait, change_Idle: Idle},
-            TimeDifferenceAttackReady: {time_out: TimeDifferenceAttackWait, change_Serve_Wait: ServeWait, change_Idle: Idle},
-            TimeDifferenceAttackWait: {x_down: TimeDifferenceAttackHit, time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},
-            TimeDifferenceAttackHit: {time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle},
-            FeintSetterWait: {time_out: Idle, change_Serve_Wait: ServeWait, change_Idle: Idle}
+            Idle: {right_down: Move, right_up: Move, left_down: Move, left_up: Move, change_Judge_Wait: JudgeWait, a_down: Receive, z_down: AttackReady, x_down: TimeDifferenceAttackBlockerReady, c_down: FeintSetterWait},
+            Move: {right_down: Idle, right_up: Idle, left_down: Idle, left_up: Idle, change_Judge_Wait: JudgeWait, change_Idle: Idle},
+            JudgeWait: {time_out: ServeWait, change_Idle: Idle},
+            ServeWait: {right_down: DriveServeReady, left_down: SpikeServeReady, time_out: JudgeWait, change_Idle: Idle},
+            DriveServeReady: {time_out: DriveServeWait, change_Judge_Wait: JudgeWait, change_Idle: Idle},
+            DriveServeWait: {space_down: DriveServeHit, time_out: Idle, change_Judge_Wait: JudgeWait, change_Idle: Idle},
+            DriveServeHit: {time_out: Idle, change_Judge_Wait: JudgeWait, change_Idle: Idle},
+            SpikeServeReady: {time_out: SpikeServeWait, change_Judge_Wait: JudgeWait, change_Idle: Idle},
+            SpikeServeWait: {space_down: SpikeServeHit, time_out: Idle, change_Judge_Wait: JudgeWait, change_Idle: Idle},
+            SpikeServeHit: {time_out: Idle, change_Judge_Wait: JudgeWait, change_Idle: Idle},
+            Receive: {time_out: Idle, change_Judge_Wait: JudgeWait, change_Idle: Idle},
+            AttackReady: {time_out: AttackWait, change_Judge_Wait: JudgeWait, change_Idle: Idle},
+            AttackWait: {z_down: AttackHit, time_out: Idle, change_Judge_Wait: JudgeWait, change_Idle: Idle},
+            AttackHit: {time_out: Idle, change_Judge_Wait: JudgeWait, change_Idle: Idle},
+            TimeDifferenceAttackBlockerReady: {time_out: TimeDifferenceAttackReady, change_Judge_Wait: JudgeWait, change_Idle: Idle},
+            TimeDifferenceAttackReady: {time_out: TimeDifferenceAttackWait, change_Judge_Wait: JudgeWait, change_Idle: Idle},
+            TimeDifferenceAttackWait: {x_down: TimeDifferenceAttackHit, time_out: Idle, change_Judge_Wait: JudgeWait, change_Idle: Idle},
+            TimeDifferenceAttackHit: {time_out: Idle, change_Judge_Wait: JudgeWait, change_Idle: Idle},
+            FeintSetterWait: {time_out: Idle, change_Judge_Wait: JudgeWait, change_Idle: Idle}
         }
 
     def start(self):
