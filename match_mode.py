@@ -69,7 +69,7 @@ def update():
     if font_y < 400:
         font_y += 5
     if Korea_x >= 150 and ai_x <= 450 and font_y >= 400:
-        if get_time() - start_time >= 12.0:
+        if get_time() - start_time >= 11.0:
             bgm.stop()
             game_framework.change_mode(play_mode)
     delay(0.01)

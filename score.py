@@ -10,7 +10,7 @@ import win_mode
 class Score:
     def __init__(self):
         if server.stage == 1:
-            self.player_score, self.ai_score = 14, 11
+            self.player_score, self.ai_score = 11, 11
         elif server.stage == 2:
             self.player_score, self.ai_score = 10, 11
         elif server.stage == 3:
