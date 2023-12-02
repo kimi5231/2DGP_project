@@ -1,9 +1,9 @@
-from pico2d import load_image, get_time
+from pico2d import load_image, get_time, draw_rectangle
 
 import game_framework
 import server
 from behavior_tree import BehaviorTree, Condition, Action, Sequence, Selector
-from player import AttackWait, TimeDifferenceAttackBlockerReady
+from player import TimeDifferenceAttackBlockerReady, AttackReady
 
 # blocker move speed
 PIXEL_PER_METER = (10.0 / 0.3) # 10 pixel 30 cm
@@ -26,7 +26,7 @@ ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 class Enemy_Blocker:
     def __init__(self, x, y, dir):
         self.x, self.y, self.dir = x, y, dir
-        self.original_x, self.original_y = x, y
+        self.original_x = x
         self.frame = 0
         self.action = 0
         self.frame_num = 1
@@ -53,6 +53,8 @@ class Enemy_Blocker:
             self.image_210.clip_composite_draw(int(self.frame) * self.frame_len,
                                                self.action * self.action_len,
                                                self.frame_len, self.action_len, 0, 'h', sx, sy + 20, 50, 100)
+        draw_rectangle(*self.get_bb())
+
     def update(self):
         self.frame = ((self.frame + self.frame_num * ACTION_PER_TIME * game_framework.frame_time)
                         % self.frame_num)
@@ -141,7 +143,7 @@ class Enemy_Blocker:
         return BehaviorTree.RUNNING
 
     def is_enemy_spiker_ready(self):
-        if server.player.state_machine.cur_state == AttackWait or server.player.state_machine.cur_state == TimeDifferenceAttackBlockerReady:
+        if server.player.state_machine.cur_state == AttackReady or server.player.state_machine.cur_state == TimeDifferenceAttackBlockerReady:
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
@@ -151,6 +153,7 @@ class Enemy_Blocker:
         self.frame_num = 7
         self.frame_len = 60
         self.action_len = 180
+        self.state = 'blocking hit'
         if int(self.frame) == 6:
             self.state = 'come back'
             return BehaviorTree.SUCCESS
@@ -169,7 +172,7 @@ class Enemy_Blocker:
         self.frame_len = 50
         self.action_len = 110
         self.x += self.dir * -1 * MOVE_SPEED_PPS * game_framework.frame_time
-        if self.x <= self.original_x and self.y <= self.original_y:
+        if self.x >= self.original_x:
             self.state = 'Idle'
             return BehaviorTree.SUCCESS
         else:
@@ -201,7 +204,6 @@ class Enemy_Blocker:
 
         SEQ_keep_Idle_state = Sequence('Idle 상태 유지', c1, a1)
 
-        #c2 = Condition('공이 근처에 있는가?', self.is_ball_nearby, 7)
         c2 = Condition('상대팀이 토스를 준비 중인가?', self.is_enemy_setter_toss_wait)
         a2 = Action('blocking ready', self.blocking_ready)
 

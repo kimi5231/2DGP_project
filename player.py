@@ -788,5 +788,5 @@ class Player:
             elif self.state_machine.cur_state == SpikeServeHit:
                 server.ball.speed_x = SPIKE_HIT_SPEED_PPS
                 server.ball.speed_y = SPIKE_SERVE_SPEED_PPS
-            elif self.state_machine.cur_state == AttackHit and self.state_machine.cur_state == TimeDifferenceAttackHit:
+            elif self.state_machine.cur_state == AttackHit or self.state_machine.cur_state == TimeDifferenceAttackHit:
                 server.ball.speed_x = SPIKE_HIT_SPEED_PPS

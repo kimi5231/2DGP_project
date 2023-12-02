@@ -26,7 +26,7 @@ ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 class Blocker:
     def __init__(self, x, y, dir):
         self.x, self.y, self.dir = x, y, dir
-        self.original_x, self.original_y = x, y
+        self.original_x = x
         self.frame = 0
         self.action = 0
         self.frame_num = 1
@@ -175,7 +175,7 @@ class Blocker:
         self.frame_len = 50
         self.action_len = 110
         self.x += self.dir * -1 * MOVE_SPEED_PPS * game_framework.frame_time
-        if self.x <= self.original_x and self.y <= self.original_y:
+        if self.x <= self.original_x:
             self.state = 'Idle'
             return BehaviorTree.SUCCESS
         else:
