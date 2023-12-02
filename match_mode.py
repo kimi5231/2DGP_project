@@ -35,7 +35,7 @@ def init():
 
     bgm = load_music('match_music.mp3')
     bgm.set_volume(32)
-    bgm.repeat_play()
+    bgm.play(1)
 
     start_time = get_time()
 

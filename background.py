@@ -1,4 +1,4 @@
-from pico2d import load_image, get_canvas_width, get_canvas_height, clamp, draw_rectangle
+from pico2d import load_image, get_canvas_width, get_canvas_height, clamp, draw_rectangle, load_music
 
 import server
 
@@ -16,6 +16,9 @@ class Background:
         self.net_x, self.net_y = 500, 97
         self.window_left = int(server.ball.x) - self.cw // 2
         self.window_bottom = int(server.ball.y) - self.ch // 2
+        self.bgm = load_music('play_music.mp3')
+        self.bgm.set_volume(32)
+        self.bgm.repeat_play()
 
     def draw(self):
         court_sx = self.court_x - self.window_left
