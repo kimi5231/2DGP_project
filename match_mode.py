@@ -1,4 +1,4 @@
-from pico2d import load_image, load_font, clear_canvas, update_canvas, get_events, delay
+from pico2d import load_image, load_font, clear_canvas, update_canvas, get_events, delay, load_music, get_time
 from sdl2 import SDL_QUIT, SDL_KEYDOWN, SDLK_ESCAPE
 
 import game_framework
@@ -12,12 +12,14 @@ def init():
     global Korea_x, Korea_y
     global ai_x, ai_y
     global font_x, font_y
+    global bgm
+    global start_time
 
     image_background = load_image('match_background.jpg')
     font = load_font('ENCR10B.TTF', 30)
-    Korea_x, Korea_y = -100, 400
-    ai_x, ai_y = 700, 400
-    font_x, font_y = 280, 100
+    Korea_x, Korea_y = -500, 400
+    ai_x, ai_y = 1100, 400
+    font_x, font_y = 280, -500
 
     image_Korea = load_image('Korea.png')
     if server.stage == 1:
@@ -31,14 +33,22 @@ def init():
     elif server.stage == 5:
         image_ai = load_image('USA.png')
 
+    bgm = load_music('match_music.mp3')
+    bgm.set_volume(32)
+    bgm.repeat_play()
+
+    start_time = get_time()
+
 def finish():
     global image_Korea, image_ai, image_background
     global font
+    global bgm
 
     del image_Korea
     del image_ai
     del image_background
     del font
+    del bgm
 
 
 def handle_events():
@@ -54,13 +64,14 @@ def update():
     global Korea_x, Korea_y, ai_x, ai_y, font_x, font_y
 
     if Korea_x < 150 and ai_x > 450:
-        Korea_x += 10
-        ai_x -= 10
+        Korea_x += 5
+        ai_x -= 5
     if font_y < 400:
-        font_y += 10
+        font_y += 5
     if Korea_x >= 150 and ai_x <= 450 and font_y >= 400:
-        delay(1.0)
-        game_framework.change_mode(play_mode)
+        if get_time() - start_time >= 12.0:
+            bgm.stop()
+            game_framework.change_mode(play_mode)
     delay(0.01)
 
 
