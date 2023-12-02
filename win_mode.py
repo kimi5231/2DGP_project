@@ -1,20 +1,26 @@
-from pico2d import load_image, load_font, clear_canvas, update_canvas, get_events, delay
-from sdl2 import SDL_QUIT, SDL_KEYDOWN, SDLK_ESCAPE
+from pico2d import load_image, clear_canvas, update_canvas, get_events, load_music, get_time
+from sdl2 import SDL_QUIT, SDL_KEYDOWN, SDLK_ESCAPE, SDLK_SPACE
 
 import game_framework
 import match_mode
-import play_mode
 
 
 def init():
     global image
+    global bgm
+    global start_time
 
     image = load_image('win.png')
-
+    bgm = load_music('win_music.mp3')
+    bgm.set_volume(32)
+    bgm.repeat_play()
+    start_time = get_time()
 
 def finish():
     global image
+    global bgm
     del image
+    del bgm
 
 
 def handle_events():
@@ -24,11 +30,15 @@ def handle_events():
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             game_framework.quit()
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_SPACE:
+            bgm.stop()
+            game_framework.change_mode(match_mode)
 
 
 def update():
-    delay(3.0)
-    game_framework.change_mode(match_mode)
+    if get_time() - start_time >= 11.0:
+        bgm.stop()
+        game_framework.change_mode(match_mode)
 
 
 def draw():
