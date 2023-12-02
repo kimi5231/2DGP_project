@@ -1,14 +1,18 @@
-from pico2d import load_image, clear_canvas, update_canvas, get_events, delay
+from pico2d import load_image, clear_canvas, update_canvas, get_events, delay, load_music
 from sdl2 import SDL_QUIT, SDL_KEYDOWN, SDLK_ESCAPE
 
 import game_framework
 import select_continue_mode
+import server
 
 
 def init():
     global image
 
     image = load_image('lose.png')
+    server.lose_bgm = load_music('lose_music.mp3')
+    server.lose_bgm.set_volume(32)
+    server.lose_bgm.repeat_play()
 
 
 def finish():

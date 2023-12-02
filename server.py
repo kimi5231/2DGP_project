@@ -26,3 +26,5 @@ score = None
 judge = None
 
 stage = 1
+
+lose_bgm = None

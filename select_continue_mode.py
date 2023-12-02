@@ -1,4 +1,4 @@
-from pico2d import load_image, load_font, clear_canvas, update_canvas, get_events, delay, get_time
+from pico2d import load_image, load_font, clear_canvas, update_canvas, get_events, get_time, load_music
 from sdl2 import SDL_QUIT, SDL_KEYDOWN, SDLK_ESCAPE, SDLK_SPACE
 
 import game_framework
@@ -34,6 +34,7 @@ def handle_events():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_SPACE:
+            server.lose_bgm.stop()
             game_framework.change_mode(play_mode)
 
 
@@ -43,6 +44,7 @@ def update():
 
     if sec == 0:
         server.stage = 1
+        server.lose_bgm.stop()
         game_framework.change_mode(title_mode)
     if get_time() - start_time >= 1.0:
         sec -= 1
