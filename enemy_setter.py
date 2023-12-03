@@ -49,7 +49,7 @@ class Enemy_Setter:
             self.image_180.clip_composite_draw(int(self.frame) * self.frame_len,
                                      self.action * self.action_len,
                                      self.frame_len, self.action_len, 0, 'h', sx, sy + 20, 36, 86)
-        draw_rectangle(*self.get_bb())
+        #draw_rectangle(*self.get_bb())
 
     def update(self):
         self.frame = ((self.frame + self.frame_num * ACTION_PER_TIME * game_framework.frame_time)

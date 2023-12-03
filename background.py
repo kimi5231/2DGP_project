@@ -43,7 +43,8 @@ class Player_Court:
         self.x, self.y = 500, 51
 
     def draw(self):
-        draw_rectangle(*self.get_bb())
+        #draw_rectangle(*self.get_bb())
+        pass
 
     def update(self):
         pass
@@ -64,7 +65,8 @@ class AI_Court:
         self.x, self.y = 500, 51
 
     def draw(self):
-        draw_rectangle(*self.get_bb())
+        #draw_rectangle(*self.get_bb())
+        pass
 
     def update(self):
         pass
@@ -85,7 +87,8 @@ class Player_Court_Out:
         self.x, self.y = 500, 51
 
     def draw(self):
-        draw_rectangle(*self.get_bb())
+        #draw_rectangle(*self.get_bb())
+        pass
 
     def update(self):
         pass
@@ -108,7 +111,8 @@ class AI_Court_Out:
         self.x, self.y = 500, 51
 
     def draw(self):
-        draw_rectangle(*self.get_bb())
+        #draw_rectangle(*self.get_bb())
+        pass
 
     def update(self):
         pass
@@ -132,7 +136,8 @@ class Net:
         self.x, self.y = 500, 97
 
     def draw(self):
-        draw_rectangle(*self.get_bb())
+        #draw_rectangle(*self.get_bb())
+        pass
 
     def update(self):
         pass

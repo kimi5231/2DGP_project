@@ -21,7 +21,7 @@ class Ball:
         sx = self.x - server.background.window_left
         sy = self.y - server.background.window_bottom
         self.image.draw(sx, sy, 22, 22)
-        draw_rectangle(*self.get_bb())
+        #draw_rectangle(*self.get_bb())
 
     def update(self):
         if self.state != 'Idle':
@@ -72,3 +72,7 @@ class Ball:
             self.sound.play()
         if group == 'net:ball':
             self.dir *= -1
+            if self.dir == 1:
+                self.x += 10
+            elif self.dir == -1:
+                self.x -= 10
